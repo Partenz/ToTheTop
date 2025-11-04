@@ -1,15 +1,24 @@
 from pico2d import *
 
 open_canvas()
-player = load_image('playerGPT.png')
+player = load_image('player_walk.png')
 
-width = 0
-height = 256
+player2 = load_image('player_attack.png')
+
+frame = 0
+frame2 = 0
+
 while True:
     clear_canvas()
-    player.clip_draw(256 * width, 280 * 1, 256, 300, 400, 300)
+
+    player.clip_draw(100 * frame, 0 , 100, 165, 200, 300)
+    frame = (frame + 1) % 3
+
+    player2.clip_draw(150 * frame2, 0 , 150, 165, 400, 300)
+    frame2 = (frame2 + 1) % 4
+
     update_canvas()
 
-    width = (width + 1) % 4
+    delay(0.1)
 
-    delay(1)
+close_canvas()
