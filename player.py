@@ -80,3 +80,27 @@ class Player:
 
     def get_bb(self):
         pass
+
+def left_down(self, event):
+    pass
+
+def left_up(self, event):
+    pass
+
+def right_down(self, event):
+    pass
+
+def right_up(self, event):
+    pass
+
+def up_down(self, event):
+    pass
+
+def up_up(self, event):
+    pass
+
+def down_down(self, event):
+    pass
+
+def down_up(self, event):
+    pass
