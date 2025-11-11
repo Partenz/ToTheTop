@@ -3,13 +3,52 @@ import game_world
 from state_machine import StateMachine
 
 class Idle:
-    pass
+    def __init__(self, player):
+        self.player = player
+
+    def enter(self, event):
+        pass
+
+    def exot(self, event):
+        pass
+
+    def do(self):
+        pass
+
+    def draw(self):
+        pass
 
 class Walk:
-    pass
+    def __init__(self, player):
+        self.player = player
+
+    def enter(self, event):
+        pass
+
+    def exot(self, event):
+        pass
+
+    def do(self):
+        pass
+
+    def draw(self):
+        pass
 
 class Attack:
-    pass
+    def __init__(self, player):
+        self.player = player
+
+    def enter(self, event):
+        pass
+
+    def exot(self, event):
+        pass
+
+    def do(self):
+        pass
+
+    def draw(self):
+        pass
 
 class Player:
     def __init__(self):
