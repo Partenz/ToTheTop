@@ -64,8 +64,8 @@ class Player:
         self.WALK = Walk(self)
         self.ATTACK = Attack(self)
         self.state_machine = StateMachine(self.IDLE, {
-            self.IDLE: {},
-            self.WALK: {},
+            self.IDLE: {left_down: self.WALK, left_up:self.WALK, right_down:self.WALK, right_up:self.WALK, up_down:self.WALK, up_up:self.WALK, down_down:self.WALK, down_up:self.WALK, space_down:self.ATTACK},
+            self.WALK: {left_down: self.IDLE, left_up:self.IDLE, right_down:self.IDLE, right_up:self.IDLE, up_down:self.IDLE, up_up:self.IDLE, down_down:self.IDLE, down_up:self.IDLE, space_down:self.ATTACK},
             self.ATTACK: {}
         })
 
