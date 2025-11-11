@@ -11,7 +11,7 @@ class Idle:
     def enter(self, event):
         pass
 
-    def exot(self, event):
+    def exit(self, event):
         pass
 
     def do(self):
@@ -25,9 +25,12 @@ class Walk:
         self.player = player
 
     def enter(self, event):
-        pass
+        if right_down(event) or left_up(event):
+            self.player.face_dir = self.player.dir = 1
+        elif left_down(event) or right_up(event):
+            self.player.face_dir = self.player.dir = -1
 
-    def exot(self, event):
+    def exit(self, event):
         pass
 
     def do(self):
@@ -43,7 +46,7 @@ class Attack:
     def enter(self, event):
         pass
 
-    def exot(self, event):
+    def exit(self, event):
         pass
 
     def do(self):
@@ -57,6 +60,7 @@ class Player:
         self.x , self.y = 960, 100
         self.frame = 0
         self.face_dir = 1  # 1: right, -1: left
+        self.dir = 0 # 0 정지 1 오른쪽 -1 왼쪽
         self.image = {}
         self.image['Idle'] = [load_image('./resources/player/player_idle%d' %i +'.png') for i in range(1, 2 + 1)]
         self.image['Walk'] = [load_image('./resources/player/player_walk%d' %i +'.png') for i in range(1, 3 + 1)]
