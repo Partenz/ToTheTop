@@ -1,6 +1,7 @@
 from pico2d import load_image
 from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_SPACE
 
+import game_framework
 import game_world
 from state_machine import StateMachine
 
@@ -14,6 +15,8 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = {'Idle': 2, 'Walk': 3, 'Attack': 4}
 
+pi = 3.141592
+
 class Idle:
     def __init__(self, player):
         self.player = player
@@ -25,10 +28,13 @@ class Idle:
         pass
 
     def do(self):
-        pass
+        self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Idle'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Idle']
 
     def draw(self):
-        pass
+        if self.player.face_dir == 1:
+            self.player.image['Idle'][int(self.player.frame)].draw(self.player.x, self.player.y, self.player.width, self.player.height)
+        else:
+            self.player.image['Walk'][int(self.player.frame)].composite_draw(pi / 2, 'v', self.player.x, self.player.y, self.player.width, self.player.height)
 
 class Walk:
     def __init__(self, player):
@@ -71,6 +77,8 @@ class Player:
         self.frame = 0
         self.face_dir = 1  # 1: right, -1: left
         self.dir = 0 # 0 정지 1 오른쪽 -1 왼쪽
+        self.width = 100
+        self.height = 100
         self.image = {}
         self.image['Idle'] = [load_image('./resources/player/player_idle%d' %i +'.png') for i in range(1, 2 + 1)]
         self.image['Walk'] = [load_image('./resources/player/player_walk%d' %i +'.png') for i in range(1, 3 + 1)]
@@ -97,29 +105,29 @@ class Player:
     def get_bb(self):
         pass
 
-def left_down(self, event):
+def left_down(event):
     return event[0] == 'INPUT' and event[1] == SDL_KEYDOWN and event[2] == SDLK_LEFT
 
-def left_up(self, event):
+def left_up(event):
     return event[0] == 'INPUT' and event[1] == SDL_KEYUP and event[2] == SDLK_LEFT
 
-def right_down(self, event):
+def right_down(event):
     return event[0] == 'INPUT' and event[1] == SDL_KEYDOWN and event[2] == SDLK_RIGHT
 
-def right_up(self, event):
+def right_up(event):
     return event[0] == 'INPUT' and event[1] == SDL_KEYUP and event[2] == SDLK_RIGHT
 
-def up_down(self, event):
+def up_down(event):
     return event[0] == 'INPUT' and event[1] == SDL_KEYDOWN and event[2] == SDLK_UP
 
-def up_up(self, event):
+def up_up(event):
     return event[0] == 'INPUT' and event[1] == SDL_KEYUP and event[2] == SDLK_UP
 
-def down_down(self, event):
+def down_down(event):
     return event[0] == 'INPUT' and event[1] == SDL_KEYDOWN and event[2] == SDLK_DOWN
 
-def down_up(self, event):
+def down_up(event):
     return event[0] == 'INPUT' and event[1] == SDL_KEYUP and event[2] == SDLK_DOWN
 
-def space_down(self, event):
+def space_down(event):
     return event[0] == 'INPUT' and event[1] == SDL_KEYDOWN and event[2] == SDLK_SPACE
