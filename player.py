@@ -4,6 +4,12 @@ from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_UP, SDLK_DO
 import game_world
 from state_machine import StateMachine
 
+PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 20 cm
+WALK_SPEED_KMPH = 10.0
+WALK_SPEED_MPM = (WALK_SPEED_KMPH * 1000.0 / 60.0)
+WALK_SPEED_MPS = (WALK_SPEED_MPM / 60.0)
+WALK_SPEED_PPS = (WALK_SPEED_MPS * PIXEL_PER_METER)
+
 class Idle:
     def __init__(self, player):
         self.player = player
