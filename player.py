@@ -72,13 +72,13 @@ class Player:
         })
 
     def update(self):
-        pass
+        self.state_machine.update()
 
     def handle_event(self, event):
-        pass
+        self.state_machine.handle_state_event(('INPUT', event))
 
     def draw(self):
-        pass
+        self.state_machine.draw()
 
     def get_bb(self):
         pass
