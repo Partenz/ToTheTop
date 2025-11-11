@@ -34,7 +34,7 @@ class Idle:
         if self.player.face_dir == 1:
             self.player.image['Idle'][int(self.player.frame)].draw(self.player.x, self.player.y, self.player.width, self.player.height)
         else:
-            self.player.image['Walk'][int(self.player.frame)].composite_draw(pi / 2, 'v', self.player.x, self.player.y, self.player.width, self.player.height)
+            self.player.image['Walk'][int(self.player.frame)].composite_draw(0, 'h', self.player.x, self.player.y, self.player.width, self.player.height)
 
 class Walk:
     def __init__(self, player):
@@ -75,7 +75,7 @@ class Player:
     def __init__(self):
         self.x , self.y = 960, 100
         self.frame = 0
-        self.face_dir = 1  # 1: right, -1: left
+        self.face_dir = -1  # 1: right, -1: left
         self.dir = 0 # 0 정지 1 오른쪽 -1 왼쪽
         self.width = 100
         self.height = 100
