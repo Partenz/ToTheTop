@@ -1,5 +1,5 @@
 from pico2d import load_image
-from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_UP, SDLK_DOWN
+from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_SPACE
 
 import game_world
 from state_machine import StateMachine
@@ -9,6 +9,10 @@ WALK_SPEED_KMPH = 10.0
 WALK_SPEED_MPM = (WALK_SPEED_KMPH * 1000.0 / 60.0)
 WALK_SPEED_MPS = (WALK_SPEED_MPM / 60.0)
 WALK_SPEED_PPS = (WALK_SPEED_MPS * PIXEL_PER_METER)
+
+TIME_PER_ACTION = 0.5
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = {'Idle': 2, 'Walk': 3, 'Attack': 4}
 
 class Idle:
     def __init__(self, player):
@@ -116,3 +120,6 @@ def down_down(self, event):
 
 def down_up(self, event):
     return event[0] == 'INPUT' and event[1] == SDL_KEYUP and event[2] == SDLK_DOWN
+
+def space_down(self, event):
+    return event[0] == 'INPUT' and event[1] == SDL_KEYDOWN and event[2] == SDLK_SPACE

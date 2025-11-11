@@ -21,10 +21,6 @@ def handle_events():
 def init():
     global player
 
-    grass = Grass()
-    game_world.add_object(grass, 0)
-    game_world.add_collision_pair('grass:ball', grass, None)
-
     player = Player()
     game_world.add_object(player, 3)
 
