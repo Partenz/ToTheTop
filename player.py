@@ -1,4 +1,6 @@
 from pico2d import load_image
+from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_UP, SDLK_DOWN
+
 import game_world
 from state_machine import StateMachine
 
@@ -82,25 +84,25 @@ class Player:
         pass
 
 def left_down(self, event):
-    pass
+    return event[0] == 'INPUT' and event[1] == SDL_KEYDOWN and event[2] == SDLK_LEFT
 
 def left_up(self, event):
-    pass
+    return event[0] == 'INPUT' and event[1] == SDL_KEYUP and event[2] == SDLK_LEFT
 
 def right_down(self, event):
-    pass
+    return event[0] == 'INPUT' and event[1] == SDL_KEYDOWN and event[2] == SDLK_RIGHT
 
 def right_up(self, event):
-    pass
+    return event[0] == 'INPUT' and event[1] == SDL_KEYUP and event[2] == SDLK_RIGHT
 
 def up_down(self, event):
-    pass
+    return event[0] == 'INPUT' and event[1] == SDL_KEYDOWN and event[2] == SDLK_UP
 
 def up_up(self, event):
-    pass
+    return event[0] == 'INPUT' and event[1] == SDL_KEYUP and event[2] == SDLK_UP
 
 def down_down(self, event):
-    pass
+    return event[0] == 'INPUT' and event[1] == SDL_KEYDOWN and event[2] == SDLK_DOWN
 
 def down_up(self, event):
-    pass
+    return event[0] == 'INPUT' and event[1] == SDL_KEYUP and event[2] == SDLK_DOWN
