@@ -61,6 +61,34 @@ class Walk:
         else:
             self.player.image['Walk'][int(self.player.frame)].composite_draw(0, 'h', self.player.x, self.player.y, self.player.width, self.player.height)
 
+class Jump:
+    def __init__(self, player):
+        self.player = player
+
+    def enter(self, event):
+        self.player.jump_time = get_time()
+        self.player.frame = 0
+
+    def exit(self, event):
+        self.player.frame = 0
+
+    def do(self):
+        if get_time() - self.player.jump_time < ACTION_PER_TIME / 2:
+            self.player.y += WALK_SPEED_PPS * game_framework.frame_time
+        elif ACTION_PER_TIME / 2 <= get_time() - self.player.jump_time < ACTION_PER_TIME:
+            self.player.y -= WALK_SPEED_PPS * game_framework.frame_time
+
+        if get_time() - self.player.jump_time > ACTION_PER_TIME:
+            self.player.state_machine.handle_state_event(('JUMP_END', None))
+
+        self.player.x += self.player.dir * WALK_SPEED_PPS * game_framework.frame_time
+
+    def draw(self):
+        if self.player.face_dir == 1:
+            self.player.image['Walk'][int(self.player.frame)].draw(self.player.x, self.player.y, self.player.width, self.player.height)
+        else:
+            self.player.image['Walk'][int(self.player.frame)].composite_draw(0, 'h', self.player.x, self.player.y, self.player.width, self.player.height)
+
 class Attack:
     def __init__(self, player):
         self.player = player
@@ -76,34 +104,6 @@ class Attack:
 
     def draw(self):
         pass
-
-class Jump:
-    def __init__(self, player):
-        self.player = player
-
-    def enter(self, event):
-        self.player.jump_time = get_time()
-
-    def exit(self, event):
-        pass
-
-    def do(self):
-        if get_time() - self.player.jump_time < ACTION_PER_TIME / 2:
-            self.player.y += WALK_SPEED_PPS * game_framework.frame_time
-        elif ACTION_PER_TIME / 2 <= get_time() - self.player.jump_time < ACTION_PER_TIME:
-            self.player.y -= WALK_SPEED_PPS * game_framework.frame_time
-
-        if get_time() - self.player.jump_time > ACTION_PER_TIME:
-            self.player.state_machine.handle_state_event(('JUMP_END', None))
-
-        self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Walk'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Walk']
-        self.player.x += self.player.dir * WALK_SPEED_PPS * game_framework.frame_time
-
-    def draw(self):
-        if self.player.face_dir == 1:
-            self.player.image['Walk'][int(self.player.frame)].draw(self.player.x, self.player.y, self.player.width, self.player.height)
-        else:
-            self.player.image['Walk'][int(self.player.frame)].composite_draw(0, 'h', self.player.x, self.player.y, self.player.width, self.player.height)
 
 class Player:
     def __init__(self):
