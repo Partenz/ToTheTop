@@ -1,4 +1,4 @@
-from pico2d import load_image
+from pico2d import load_image, get_time
 from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_SPACE
 
 import game_framework
@@ -41,15 +41,12 @@ class Walk:
         self.player = player
 
     def enter(self, event):
-        if right_down(event) or left_up(event):
-            self.player.face_dir = self.player.dir = 1
-        elif left_down(event) or right_up(event):
-            self.player.face_dir = self.player.dir = -1
-
-        if up_down(event) or down_up(event):
-            self.player.dir_y = 1
-        elif down_down(event) or up_up(event):
-            self.player.dir_y = -1
+        if left_down(event) or right_up(event):
+            self.player.dir = -1
+            self.player.face_dir = -1
+        elif right_down(event) or left_up(event):
+            self.player.dir = 1
+            self.player.face_dir = 1
 
     def exit(self, event):
         pass
@@ -57,7 +54,6 @@ class Walk:
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Walk'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Walk']
         self.player.x += self.player.dir * WALK_SPEED_PPS * game_framework.frame_time
-        self.player.y += self.player.dir_y * WALK_SPEED_PPS * game_framework.frame_time
 
     def draw(self):
         if self.player.face_dir == 1:
@@ -81,13 +77,40 @@ class Attack:
     def draw(self):
         pass
 
+class Jump:
+    def __init__(self, player):
+        self.player = player
+
+    def enter(self, event):
+        self.player.jump_time = get_time()
+
+    def exit(self, event):
+        pass
+
+    def do(self):
+        if get_time() - self.player.jump_time < ACTION_PER_TIME / 2:
+            self.player.y += WALK_SPEED_PPS * game_framework.frame_time
+        elif ACTION_PER_TIME / 2 <= get_time() - self.player.jump_time < ACTION_PER_TIME:
+            self.player.y -= WALK_SPEED_PPS * game_framework.frame_time
+
+        if get_time() - self.player.jump_time > ACTION_PER_TIME:
+            self.player.state_machine.handle_state_event(('JUMP_END', None))
+
+        self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Walk'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Walk']
+        self.player.x += self.player.dir * WALK_SPEED_PPS * game_framework.frame_time
+
+    def draw(self):
+        if self.player.face_dir == 1:
+            self.player.image['Walk'][int(self.player.frame)].draw(self.player.x, self.player.y, self.player.width, self.player.height)
+        else:
+            self.player.image['Walk'][int(self.player.frame)].composite_draw(0, 'h', self.player.x, self.player.y, self.player.width, self.player.height)
+
 class Player:
     def __init__(self):
-        self.x , self.y = 960, 100
+        self.x , self.y =  50, 50
         self.frame = 0
         self.face_dir = 1  # 1: right, -1: left
         self.dir = 0 # 0 정지 1 오른쪽 -1 왼쪽
-        self.dir_y = 0 # 0 정지 1 위 -1 아래
         self.width = 100
         self.height = 100
         self.image = {}
@@ -98,10 +121,12 @@ class Player:
         self.IDLE = Idle(self)
         self.WALK = Walk(self)
         self.ATTACK = Attack(self)
+        self.JUMP = Jump(self)
         self.state_machine = StateMachine(self.IDLE, {
-            self.IDLE: {left_down: self.WALK, right_down: self.WALK, up_down: self.WALK},
-            self.WALK: {left_up: self.IDLE, right_up: self.IDLE, down_up: self.IDLE, up_up: self.IDLE},
-            self.ATTACK: {}
+            self.IDLE: {left_down: self.WALK, right_down: self.WALK, left_up: self.WALK, right_up: self.WALK, space_down: self.JUMP},
+            self.WALK: {left_down: self.IDLE, right_down: self.IDLE, left_up: self.IDLE, right_up: self.IDLE, space_down: self.JUMP},
+            self.ATTACK: {},
+            self.JUMP: {jump_end: self.IDLE}
         })
 
     def update(self):
@@ -128,17 +153,8 @@ def right_down(event):
 def right_up(event):
     return event[0] == 'INPUT' and event[1].type == SDL_KEYUP and event[1].key == SDLK_RIGHT
 
-def up_down(event):
-    return event[0] == 'INPUT' and event[1].type == SDL_KEYDOWN and event[1].key == SDLK_UP
-
-def up_up(event):
-    return event[0] == 'INPUT' and event[1].type == SDL_KEYUP and event[1].key == SDLK_UP
-
-def down_down(event):
-    return event[0] == 'INPUT' and event[1].type == SDL_KEYDOWN and event[1].key == SDLK_DOWN
-
-def down_up(event):
-    return event[0] == 'INPUT' and event[1].type == SDL_KEYUP and event[1].key == SDLK_DOWN
-
 def space_down(event):
     return event[0] == 'INPUT' and event[1].type == SDL_KEYDOWN and event[1].key == SDLK_SPACE
+
+def jump_end(event):
+    return event[0] == 'JUMP_END'
