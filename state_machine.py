@@ -15,6 +15,7 @@ class StateMachine:
                 self.next_state.enter(event)
                 self.cur_state = self.next_state
                 return
+        print('처리되지 않은 이벤트가 있음')
 
     def draw(self):
         self.cur_state.draw()
