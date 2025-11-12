@@ -3,6 +3,7 @@ class StateMachine:
         self.cur_state = start_state
         self.state_transitions = state_transitions
         self.cur_state.enter(('START', None))
+        self.next_state = None
 
     def update(self):
         self.cur_state.do()
@@ -19,4 +20,10 @@ class StateMachine:
 
     def draw(self):
         self.cur_state.draw()
+
+    def change_state(self, new_state, event):
+        self.cur_state.exit(event)
+        self.next_state = new_state
+        self.next_state.enter(event)
+        self.cur_state = self.next_state
 
