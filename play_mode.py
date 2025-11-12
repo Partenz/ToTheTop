@@ -4,9 +4,11 @@ from pico2d import *
 import game_framework
 import game_world
 
+from background import Background
 from player import Player
 
 player = None
+stage = None
 
 def handle_events():
     event_list = get_events()
@@ -19,10 +21,14 @@ def handle_events():
             player.handle_event(event)
 
 def init():
-    global player
+    global player, stage
+    stage = 'stage1'
 
     player = Player()
     game_world.add_object(player, 3)
+
+    background = Background()
+    game_world.add_object(background, 0)
 
 
 def update():
