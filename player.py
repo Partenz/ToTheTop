@@ -22,7 +22,7 @@ class Idle:
         self.player = player
 
     def enter(self, event):
-        pass
+        self.player.dir = 0
 
     def exit(self, event):
         pass
@@ -119,7 +119,7 @@ class Player:
         self.state_machine = StateMachine(self.IDLE, {
             self.IDLE: {left_down: self.RUN, right_down: self.RUN, space_down: self.JUMP},
             self.RUN: {left_down: self.IDLE, right_down: self.IDLE, left_up: self.IDLE, right_up: self.IDLE, space_down: self.JUMP},
-            self.JUMP: {jump_end: self.IDLE, left_down: self.JUMP, right_down: self.JUMP, left_up: self.JUMP, right_up: self.JUMP}
+            self.JUMP: {jump_end: self.IDLE}
 
         })
 
