@@ -4,13 +4,11 @@ import game_framework
 import play_mode
 
 image = None
-running = True
 
 def init():
-    global image, running
+    global image
 
     image = load_image('./resources/Title.png')
-    running = True
 
 def finish():
     global image
