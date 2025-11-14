@@ -15,6 +15,12 @@ TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = {'Idle': 12, 'Run': 8, 'Attack' : 8}
 
+GRAVITY = 9.8  # 중력 가속도 (m/s²)
+GRAVITY_PPS = GRAVITY * PIXEL_PER_METER  # 중력을 픽셀 단위로 변환
+
+JUMP_SPEED = 8.0  # 점프 초기 속도 (m/s)
+JUMP_SPEED_PPS = JUMP_SPEED * PIXEL_PER_METER  # 점프 속도를 픽셀 단위로 변환
+
 pi = 3.141592
 
 class Idle:
@@ -25,10 +31,20 @@ class Idle:
         self.player.dir = 0
 
     def exit(self, event):
-        pass
+        if space_down(event):
+            self.player.jump()
 
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Idle'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Idle']
+
+        # 중력 적용
+        self.player.velocity_y -= GRAVITY_PPS * game_framework.frame_time
+        self.player.y += self.player.velocity_y * game_framework.frame_time
+
+        # 지면 충돌 처리
+        if self.player.y <= self.player.ground_y:
+            self.player.y = self.player.ground_y
+            self.player.velocity_y = 0
 
     def draw(self):
         if self.player.face_dir == 1: # 오른쪽
@@ -48,72 +64,33 @@ class Run:
             self.player.dir = 1
             self.player.face_dir = 1
         elif left_up(event):
-            if self.player.ifPlayerJumped:
-                self.player.ifPlayerJumped = False
-                self.player.state_machine.change_state(self.player.IDLE, event)
-            else:
-                self.player.dir = 1
-                self.player.face_dir = 1
+            self.player.dir = 1
+            self.player.face_dir = 1
         elif right_up(event):
-            if self.player.ifPlayerJumped:
-                self.player.ifPlayerJumped = False
-                self.player.state_machine.change_state(self.player.IDLE, event)
-            else:
-                self.player.dir = -1
-                self.player.face_dir = -1
+            self.player.dir = -1
+            self.player.face_dir = -1
+
     def exit(self, event):
-        pass
+        if space_down(event):
+            self.player.jump()
 
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Run'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Run']
         self.player.x += self.player.dir * RUN_SPEED_PPS * game_framework.frame_time
 
+        # 중력 적용
+        self.player.velocity_y -= GRAVITY_PPS * game_framework.frame_time
+        self.player.y += self.player.velocity_y * game_framework.frame_time
+
+        # 지면 충돌 처리
+        if self.player.y <= self.player.ground_y:
+            self.player.y = self.player.ground_y
+            self.player.velocity_y = 0
+
     def draw(self):
         if self.player.face_dir == 1:  # 오른쪽
             self.player.image['Run'].clip_draw(int(self.player.frame) * 64, 64, 64, 64, self.player.x, self.player.y, self.player.width, self.player.height)
         elif self.player.face_dir == -1:  # 왼쪽
-            self.player.image['Run'].clip_draw(int(self.player.frame) * 64, 128, 64, 64, self.player.x, self.player.y, self.player.width, self.player.height)
-
-class Jump:
-    def __init__(self, player):
-        self.player = player
-        self.jump_velocity = 0
-        self.gravity = -800
-        self.initial_jump_speed = 400
-        self.ground_y = None
-        self.prev_state = None  # 이전 상태 저장
-
-    def enter(self, event):
-        self.player.ifPlayerJumped = True
-        self.jump_velocity = self.initial_jump_speed
-        self.ground_y = self.player.y
-        # 현재 dir을 점프 방향으로 저장
-        self.player.jumping_dir = self.player.dir
-        # 점프 전 상태 저장 (IDLE인지 RUN인지)
-        self.prev_state = self.player.state_machine.cur_state
-
-    def exit(self, event):
-        self.player.y = self.ground_y
-
-    def do(self):
-        self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Run'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Run']
-
-        # 수평 이동
-        self.player.x += self.player.jumping_dir * RUN_SPEED_PPS * game_framework.frame_time
-
-        # 수직 이동
-        self.player.y += self.jump_velocity * game_framework.frame_time
-        self.jump_velocity += self.gravity * game_framework.frame_time
-
-        # 착지 체크
-        if self.player.y <= self.ground_y:
-            self.player.y = self.ground_y
-            self.player.state_machine.handle_state_event(('TIME_OUT', None))
-
-    def draw(self):
-        if self.player.face_dir == 1:
-            self.player.image['Run'].clip_draw(int(self.player.frame) * 64, 64, 64, 64, self.player.x, self.player.y, self.player.width, self.player.height)
-        elif self.player.face_dir == -1:
             self.player.image['Run'].clip_draw(int(self.player.frame) * 64, 128, 64, 64, self.player.x, self.player.y, self.player.width, self.player.height)
 
 class Attack:
@@ -129,6 +106,15 @@ class Attack:
 
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Attack'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Attack']
+
+        # 중력 적용
+        self.player.velocity_y -= GRAVITY_PPS * game_framework.frame_time
+        self.player.y += self.player.velocity_y * game_framework.frame_time
+
+        # 지면 충돌 처리
+        if self.player.y <= self.player.ground_y:
+            self.player.y = self.player.ground_y
+            self.player.velocity_y = 0
 
         if get_time() - self.start_time > TIME_PER_ACTION:
             # 공격 애니메이션이 끝나면 이전 상태로 돌아감
@@ -149,19 +135,21 @@ class Player:
         self.dir = 0 # 0 정지 1 오른쪽 -1 왼쪽
         self.width = 256
         self.height = 256
-        self.ifPlayerJumped = False
+
+        # 점프 관련 변수
+        self.velocity_y = 0
+        self.ground_y = 128  # 지면 높이
+
         self.image = {}
         self.image['Idle'] = load_image('./resources/player/Player_IDLE.png')
         self.image['Run'] = load_image('./resources/player/Player_Run.png')
         self.image['Attack'] = load_image('./resources/player/Player_Attack.png')
         self.IDLE = Idle(self)
         self.RUN = Run(self)
-        self.JUMP = Jump(self)
         self.ATTACK = Attack(self)
         self.state_machine = StateMachine(self.IDLE, {
-            self.IDLE: {left_down: self.RUN, right_down: self.RUN, left_up: self.RUN, right_up: self.RUN, space_down: self.JUMP, a_down: self.ATTACK},
-            self.RUN: {left_down: self.IDLE, right_down: self.IDLE, left_up: self.IDLE, right_up: self.IDLE, space_down: self.JUMP},
-            self.JUMP: {time_out: self.IDLE},
+            self.IDLE: {left_down: self.RUN, right_down: self.RUN, left_up: self.RUN, right_up: self.RUN, space_down: self.IDLE, a_down: self.ATTACK},
+            self.RUN: {left_down: self.IDLE, right_down: self.IDLE, left_up: self.IDLE, right_up: self.IDLE, space_down: self.RUN, a_down: self.ATTACK},
             self.ATTACK: {time_out: self.IDLE},
 
         })
@@ -175,6 +163,12 @@ class Player:
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
+
+    def jump(self):
+        # 지면에 있을 때만 점프 가능
+        if self.y <= self.ground_y:
+            self.velocity_y = JUMP_SPEED_PPS
+
 
     def get_bb(self):
         return self.x - 32, self.y - 64, self.x + 32, self.y + 64
