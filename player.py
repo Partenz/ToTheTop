@@ -169,7 +169,13 @@ class Player:
 
 
     def get_bb(self):
-        return self.x - 32, self.y - 64, self.x + 32, self.y + 64
+        if self.is_attacking:
+            if self.face_dir == 1:
+                return self.x - 32, self.y - 64, self.x + 100, self.y + 64
+            elif self.face_dir == -1:
+                return self.x - 100, self.y - 64, self.x + 32, self.y + 64
+        else:
+            return self.x - 32, self.y - 64, self.x + 32, self.y + 64
 
 def left_down(event):
     return event[0] == 'INPUT' and event[1].type == SDL_KEYDOWN and event[1].key == SDLK_LEFT
