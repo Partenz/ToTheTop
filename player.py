@@ -1,19 +1,19 @@
 from pico2d import load_image, get_time
-from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_UP, SDLK_DOWN, SDLK_SPACE
+from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_SPACE
 
 import game_framework
 import game_world
 from state_machine import StateMachine
 
 PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 20 cm
-WALK_SPEED_KMPH = 10.0
-WALK_SPEED_MPM = (WALK_SPEED_KMPH * 1000.0 / 60.0)
-WALK_SPEED_MPS = (WALK_SPEED_MPM / 60.0)
-WALK_SPEED_PPS = (WALK_SPEED_MPS * PIXEL_PER_METER)
+RUN_SPEED_KMPH = 10.0
+RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
+RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
+RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
 TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-FRAMES_PER_ACTION = {'Idle': 2, 'Walk': 3, 'Attack': 4}
+FRAMES_PER_ACTION = {'Idle': 12, 'Run': 8}
 
 pi = 3.141592
 
@@ -31,12 +31,12 @@ class Idle:
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Idle'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Idle']
 
     def draw(self):
-        if self.player.face_dir == 1:
-            self.player.image['Idle'][int(self.player.frame)].draw(self.player.x, self.player.y, self.player.width, self.player.height)
-        else:
-            self.player.image['Idle'][int(self.player.frame)].composite_draw(0, 'h', self.player.x, self.player.y, self.player.width, self.player.height)
+        if self.player.face_dir == 1: # 오른쪽
+            self.player.image['Idle'].clip_draw(int(self.player.frame) * 64, 64, 64, 64, self.player.x, self.player.y, self.player.width, self.player.height)
+        elif self.player.face_dir == -1: # 왼쪽
+            self.player.image['Idle'].clip_draw(int(self.player.frame) * 64, 128, 64, 64, self.player.x, self.player.y, self.player.width, self.player.height)
 
-class Walk:
+class Run:
     def __init__(self, player):
         self.player = player
 
@@ -52,81 +52,75 @@ class Walk:
         pass
 
     def do(self):
-        self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Walk'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Walk']
-        self.player.x += self.player.dir * WALK_SPEED_PPS * game_framework.frame_time
+        self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Run'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Run']
+        self.player.x += self.player.dir * RUN_SPEED_PPS * game_framework.frame_time
 
     def draw(self):
-        if self.player.face_dir == 1:
-            self.player.image['Walk'][int(self.player.frame)].draw(self.player.x, self.player.y, self.player.width, self.player.height)
-        else:
-            self.player.image['Walk'][int(self.player.frame)].composite_draw(0, 'h', self.player.x, self.player.y, self.player.width, self.player.height)
+        if self.player.face_dir == 1:  # 오른쪽
+            self.player.image['Run'].clip_draw(int(self.player.frame) * 64, 64, 64, 64, self.player.x, self.player.y, self.player.width, self.player.height)
+        elif self.player.face_dir == -1:  # 왼쪽
+            self.player.image['Run'].clip_draw(int(self.player.frame) * 64, 128, 64, 64, self.player.x, self.player.y, self.player.width, self.player.height)
 
 class Jump:
     def __init__(self, player):
         self.player = player
+        self.jump_velocity = 0
+        self.gravity = -800
+        self.initial_jump_speed = 400
+        self.ground_y = None
+        self.prev_state = None  # 이전 상태 저장
 
     def enter(self, event):
-        self.player.jump_time = get_time()
-        self.player.frame = 0
+        self.jump_velocity = self.initial_jump_speed
+        self.ground_y = self.player.y
+        # 현재 dir을 점프 방향으로 저장
+        self.player.jumping_dir = self.player.dir
+        # 점프 전 상태 저장 (IDLE인지 RUN인지)
+        self.prev_state = self.player.state_machine.cur_state
 
     def exit(self, event):
-        self.player.frame = 0
+        self.player.y = self.ground_y
 
     def do(self):
-        if get_time() - self.player.jump_time < ACTION_PER_TIME / 2:
-            self.player.y += WALK_SPEED_PPS * game_framework.frame_time
-        elif ACTION_PER_TIME / 2 <= get_time() - self.player.jump_time < ACTION_PER_TIME:
-            self.player.y -= WALK_SPEED_PPS * game_framework.frame_time
+        self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Run'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Run']
 
-        if get_time() - self.player.jump_time > ACTION_PER_TIME:
+        # 수평 이동
+        self.player.x += self.player.jumping_dir * RUN_SPEED_PPS * game_framework.frame_time
+
+        # 수직 이동
+        self.player.y += self.jump_velocity * game_framework.frame_time
+        self.jump_velocity += self.gravity * game_framework.frame_time
+
+        # 착지 체크
+        if self.player.y <= self.ground_y:
+            self.player.y = self.ground_y
             self.player.state_machine.handle_state_event(('JUMP_END', None))
-
-        self.player.x += self.player.dir * WALK_SPEED_PPS * game_framework.frame_time
 
     def draw(self):
         if self.player.face_dir == 1:
-            self.player.image['Walk'][int(self.player.frame)].draw(self.player.x, self.player.y, self.player.width, self.player.height)
-        else:
-            self.player.image['Walk'][int(self.player.frame)].composite_draw(0, 'h', self.player.x, self.player.y, self.player.width, self.player.height)
-
-class Attack:
-    def __init__(self, player):
-        self.player = player
-
-    def enter(self, event):
-        pass
-
-    def exit(self, event):
-        pass
-
-    def do(self):
-        pass
-
-    def draw(self):
-        pass
+            self.player.image['Run'].clip_draw(int(self.player.frame) * 64, 64, 64, 64, self.player.x, self.player.y, self.player.width, self.player.height)
+        elif self.player.face_dir == -1:
+            self.player.image['Run'].clip_draw(int(self.player.frame) * 64, 128, 64, 64, self.player.x, self.player.y, self.player.width, self.player.height)
 
 class Player:
     def __init__(self):
-        self.x , self.y =  50, 50
+        self.x , self.y =  50, 150
         self.frame = 0
         self.face_dir = 1  # 1: right, -1: left
         self.dir = 0 # 0 정지 1 오른쪽 -1 왼쪽
-        self.width = 100
-        self.height = 100
+        self.width = 300
+        self.height = 300
         self.image = {}
-        self.image['Idle'] = [load_image('./resources/player/player_idle%d' %i +'.png') for i in range(1, 2 + 1)]
-        self.image['Walk'] = [load_image('./resources/player/player_walk%d' %i +'.png') for i in range(1, 3 + 1)]
-        self.image['Attack'] = [load_image('./resources/player/player_attack%d' %i +'.png') for i in range(1, 4 + 1)]
-
+        self.image['Idle'] = load_image('./resources/player/Player_IDLE.png')
+        self.image['Run'] = load_image('./resources/player/Player_Run.png')
         self.IDLE = Idle(self)
-        self.WALK = Walk(self)
-        self.ATTACK = Attack(self)
+        self.RUN = Run(self)
         self.JUMP = Jump(self)
         self.state_machine = StateMachine(self.IDLE, {
-            self.IDLE: {left_down: self.WALK, right_down: self.WALK, left_up: self.WALK, right_up: self.WALK, space_down: self.JUMP},
-            self.WALK: {left_down: self.IDLE, right_down: self.IDLE, left_up: self.IDLE, right_up: self.IDLE, space_down: self.JUMP},
-            self.ATTACK: {},
-            self.JUMP: {jump_end: self.IDLE}
+            self.IDLE: {left_down: self.RUN, right_down: self.RUN, space_down: self.JUMP},
+            self.RUN: {left_down: self.IDLE, right_down: self.IDLE, left_up: self.IDLE, right_up: self.IDLE, space_down: self.JUMP},
+            self.JUMP: {jump_end: self.IDLE, left_down: self.JUMP, right_down: self.JUMP, left_up: self.JUMP, right_up: self.JUMP}
+
         })
 
     def update(self):
