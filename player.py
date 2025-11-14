@@ -1,4 +1,4 @@
-from pico2d import load_image, get_time
+from pico2d import load_image, get_time, draw_rectangle
 from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_SPACE
 
 import game_framework
@@ -104,12 +104,12 @@ class Jump:
 
 class Player:
     def __init__(self):
-        self.x , self.y =  50, 150
+        self.x , self.y =  50, 128
         self.frame = 0
         self.face_dir = 1  # 1: right, -1: left
         self.dir = 0 # 0 정지 1 오른쪽 -1 왼쪽
-        self.width = 300
-        self.height = 300
+        self.width = 256
+        self.height = 256
         self.image = {}
         self.image['Idle'] = load_image('./resources/player/Player_IDLE.png')
         self.image['Run'] = load_image('./resources/player/Player_Run.png')
@@ -131,9 +131,10 @@ class Player:
 
     def draw(self):
         self.state_machine.draw()
+        draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        pass
+        return self.x - 32, self.y - 64, self.x + 32, self.y + 64
 
 def left_down(event):
     return event[0] == 'INPUT' and event[1].type == SDL_KEYDOWN and event[1].key == SDLK_LEFT
