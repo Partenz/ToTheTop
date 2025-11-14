@@ -162,7 +162,7 @@ class Player:
             self.IDLE: {left_down: self.RUN, right_down: self.RUN, left_up: self.RUN, right_up: self.RUN, space_down: self.JUMP, a_down: self.ATTACK},
             self.RUN: {left_down: self.IDLE, right_down: self.IDLE, left_up: self.IDLE, right_up: self.IDLE, space_down: self.JUMP},
             self.JUMP: {time_out: self.IDLE},
-            self.ATTACK: {},
+            self.ATTACK: {time_out: self.IDLE},
 
         })
 
