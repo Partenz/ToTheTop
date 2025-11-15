@@ -29,7 +29,7 @@ def remove_object(obj):
 def clear():
     global world
 
-    objects = [[] for _ in range(4)]
+    world = [[] for _ in range(4)]
 
 def collide(a,b):
     left_a, bottom_a, right_a, top_a = a.get_bb()
