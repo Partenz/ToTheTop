@@ -43,11 +43,6 @@ class Idle:
         self.player.velocity_y -= GRAVITY_PPS * game_framework.frame_time
         self.player.y += self.player.velocity_y * game_framework.frame_time
 
-        # 지면 충돌 처리
-        if self.player.y <= self.player.ground_y:
-            self.player.y = self.player.ground_y
-            self.player.velocity_y = 0
-
     def draw(self):
         # 공격 중이면 공격 애니메이션 표시
         if self.player.is_attacking:
@@ -121,11 +116,11 @@ class Player:
 
         # 점프 관련 변수
         self.velocity_y = 0
-        self.ground_y = 128  # 지면 높이
-
         # 공격 관련 변수
         self.is_attacking = False
         self.attack_start_time = 0
+
+        self.onTile = True
 
         self.image = {}
         self.image['Idle'] = load_image('./resources/player/Player_IDLE.png')
@@ -154,7 +149,7 @@ class Player:
 
     def jump(self):
         # 지면에 있을 때만 점프 가능
-        if self.y <= self.ground_y:
+        if self.onTile:
             self.velocity_y = JUMP_SPEED_PPS
 
     def attack(self):

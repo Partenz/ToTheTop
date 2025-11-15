@@ -3,11 +3,12 @@ import play_mode
 
 
 class Tile:
-    def __init__(self, x = 30, y = 60):
+    def __init__(self, x = 30, y = 60, stage = 'stage1'):
         self.image = {}
         self.x = x
         self.y = y
-        self.image['stage1'] = load_image('./resources/tile/default_dirt_tile.png')
+        self.stage = stage
+        self.image[stage] = load_image('./resources/tile/default_dirt_tile.png')
 
     def update(self):
         pass

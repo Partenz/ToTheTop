@@ -10,6 +10,7 @@ from tiles import Tile
 
 player = None
 stage = None
+tiles = None
 
 def handle_events():
     event_list = get_events()
@@ -22,7 +23,7 @@ def handle_events():
             player.handle_event(event)
 
 def init():
-    global player, stage
+    global player, stage, tiles
     stage = 'stage1'
 
     player = Player()
@@ -32,10 +33,26 @@ def init():
     game_world.add_object(background, 0)
 
     tiles = [Tile(x * 64) for x in range(0, 10 + 1)]
+    tiles += [Tile(x * 64, 200) for x in range(11, 20 + 1)]
     game_world.add_objects(tiles, 1)
 
 def update():
     game_world.update()
+
+    global player, tiles, stage
+    for tile in tiles:
+        if game_world.collide(tile, player):
+            player.onTile = True
+
+            left_tile, bottom_tile, right_tile, top_tile = tile.get_bb()
+            left_player, bottom_player, right_player, top_player = player.get_bb()
+
+            if bottom_tile < bottom_player <= top_tile and player.velocity_y <= 0: # 낙하 중일 때 타일과 만나면 위치 조정
+                player.y += top_tile - bottom_player
+            break
+        else:
+            player.onTile = False
+
 
 def draw():
     clear_canvas()
