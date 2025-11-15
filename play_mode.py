@@ -6,6 +6,7 @@ import game_world
 
 from background import Background
 from player import Player
+from tiles import Tile
 
 player = None
 stage = None
@@ -30,6 +31,8 @@ def init():
     background = Background()
     game_world.add_object(background, 0)
 
+    tiles = [Tile(x * 64) for x in range(0, 10 + 1)]
+    game_world.add_objects(tiles, 1)
 
 def update():
     game_world.update()

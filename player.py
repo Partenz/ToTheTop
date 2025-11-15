@@ -95,11 +95,6 @@ class Run:
         self.player.velocity_y -= GRAVITY_PPS * game_framework.frame_time
         self.player.y += self.player.velocity_y * game_framework.frame_time
 
-        # 지면 충돌 처리
-        if self.player.y <= self.player.ground_y:
-            self.player.y = self.player.ground_y
-            self.player.velocity_y = 0
-
     def draw(self):
         # 공격 중이면 공격 애니메이션 표시
         if self.player.is_attacking:
@@ -171,11 +166,11 @@ class Player:
     def get_bb(self):
         if self.is_attacking:
             if self.face_dir == 1:
-                return self.x - 32, self.y - 64, self.x + 100, self.y + 64
+                return self.x - 32, self.y - 50, self.x + 100, self.y + 64
             elif self.face_dir == -1:
-                return self.x - 100, self.y - 64, self.x + 32, self.y + 64
+                return self.x - 100, self.y - 50, self.x + 32, self.y + 64
         else:
-            return self.x - 32, self.y - 64, self.x + 32, self.y + 64
+            return self.x - 32, self.y - 50, self.x + 32, self.y + 64
 
 def left_down(event):
     return event[0] == 'INPUT' and event[1].type == SDL_KEYDOWN and event[1].key == SDLK_LEFT
