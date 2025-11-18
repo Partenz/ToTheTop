@@ -3,6 +3,7 @@ from pico2d import *
 
 import game_framework
 import game_world
+import stage2_mode
 import title_mode
 
 from background import Background
@@ -61,6 +62,8 @@ def update():
 
     if game_world.collide(player, portal):
         print("다음 스테이지로 이동")
+        game_world.stage = 'stage2'
+        game_framework.change_mode(stage2_mode)
 
 
 def draw():

@@ -10,8 +10,8 @@ from player import Player
 from tiles import Tile
 
 player = None
-stage = None
 tiles = None
+portal = None
 
 def handle_events():
     event_list = get_events()
@@ -24,8 +24,7 @@ def handle_events():
             player.handle_event(event)
 
 def init():
-    global player, stage, tiles
-    stage = 'stage1'
+    global player, tiles, portal
 
     player = Player()
     game_world.add_object(player, 3)
@@ -33,16 +32,16 @@ def init():
     background = Background()
     game_world.add_object(background, 0)
 
-    if stage == 'stage1':
-        tiles = [Tile(x * 64) for x in range(0, 30 + 1)]
-        tiles += [Tile(x * 64, 200) for x in range(11, 13 + 1)]
-        tiles += [Tile(x * 64, 340) for x in range(15, 18 + 1)]
-        game_world.add_objects(tiles, 1)
+    tiles = [Tile(x * 64) for x in range(0, 30 + 1)]
+    game_world.add_objects(tiles, 1)
+
+    portal = Portal(1900, 150)
+    game_world.add_object(portal, 1)
 
 def update():
     game_world.update()
 
-    global player, tiles, stage
+    global player, tiles, portal
     for tile in tiles:
         if game_world.collide(tile, player):
             left_tile, bottom_tile, right_tile, top_tile = tile.get_bb()
@@ -58,6 +57,9 @@ def update():
         else:
             player.onTile = False
 
+    if game_world.collide(player, portal):
+        print("다음 스테이지로 이동")
+
 
 def draw():
     clear_canvas()
@@ -70,3 +72,19 @@ def finish():
 
 def pause(): pass
 def resume(): pass
+
+class Portal:
+    def __init__(self, x, y, width = 100, height = 100):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+    def update(self):
+        pass
+
+    def draw(self):
+        draw_rectangle(*self.get_bb())
+
+    def get_bb(self):
+        return self.x - self.width // 2, self.y - self.height // 2, self.x + self.width // 2, self.y + self.height // 2

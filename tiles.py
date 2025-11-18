@@ -4,12 +4,12 @@ import game_world
 
 
 class Tile:
-    def __init__(self, x = 30, y = 60, stage = 'stage1'):
+    def __init__(self, x = 30, y = 60):
         self.image = {}
         self.x = x
         self.y = y
-        self.stage = stage
-        self.image[stage] = load_image('./resources/tile/default_dirt_tile.png')
+        self.image['stage1'] = load_image('./resources/tile/default_dirt_tile.png')
+        self.image['stage2'] = load_image('./resources/tile/default_dirt_tile.png')
 
     def update(self):
         pass
