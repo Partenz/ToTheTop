@@ -1,6 +1,7 @@
 world = [[] for _ in range(4)]
 
 stage = 'stage1'
+stage_from = None
 
 def add_object(obj, depth = 0):
     world[depth].append(obj)

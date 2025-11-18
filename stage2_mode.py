@@ -28,7 +28,10 @@ def handle_events():
 def init():
     global player, tiles, portal_left, portal_right
 
-    player = Player()
+    if game_world.stage_from == 'stage1':
+        player = Player()
+    else:
+        player = Player(1800, 128)
     game_world.add_object(player, 3)
 
     background = Background()
@@ -65,6 +68,7 @@ def update():
     if game_world.collide(player, portal_left):
         print("이전 스테이지로 이동")
         game_world.stage = 'stage1'
+        game_world.stage_from = 'stage2'
         game_framework.change_mode(stage1_mode)
 
     if game_world.collide(player, portal_right):

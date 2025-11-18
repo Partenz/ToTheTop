@@ -138,8 +138,8 @@ class Jump:
 
 
 class Player:
-    def __init__(self):
-        self.x , self.y =  50, 128
+    def __init__(self, x = 50, y = 128):
+        self.x , self.y =  x, y
         self.frame = 0
         self.face_dir = 1  # 1: right, -1: left
         self.dir = 0 # 0 정지 1 오른쪽 -1 왼쪽
