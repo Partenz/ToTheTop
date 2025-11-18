@@ -33,11 +33,10 @@ def init():
     background = Background()
     game_world.add_object(background, 0)
 
-    if stage == 'stage1':
-        tiles = [Tile(x * 64) for x in range(0, 30 + 1)]
-        tiles += [Tile(x * 64, 200) for x in range(11, 13 + 1)]
-        tiles += [Tile(x * 64, 340) for x in range(15, 18 + 1)]
-        game_world.add_objects(tiles, 1)
+    tiles = [Tile(x * 64) for x in range(0, 30 + 1)]
+    tiles += [Tile(x * 64, 200) for x in range(11, 13 + 1)]
+    tiles += [Tile(x * 64, 340) for x in range(15, 18 + 1)]
+    game_world.add_objects(tiles, 1)
 
 def update():
     game_world.update()

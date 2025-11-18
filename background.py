@@ -1,5 +1,6 @@
 from pico2d import load_image
-import play_mode
+
+import game_world
 
 
 class Background:
@@ -11,4 +12,4 @@ class Background:
         pass
 
     def draw(self):
-        self.image[play_mode.stage].draw(1920 // 2, 720 // 2, 1920, 720)
+        self.image[game_world.stage].draw(1920 // 2, 720 // 2, 1920, 720)

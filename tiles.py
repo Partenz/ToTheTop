@@ -1,5 +1,6 @@
 from pico2d import load_image, draw_rectangle
-import play_mode
+
+import game_world
 
 
 class Tile:
@@ -14,7 +15,7 @@ class Tile:
         pass
 
     def draw(self):
-        self.image[play_mode.stage].draw(self.x, self.y)
+        self.image[game_world.stage].draw(self.x, self.y)
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
