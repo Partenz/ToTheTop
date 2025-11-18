@@ -43,14 +43,16 @@ def update():
     global player, tiles, stage
     for tile in tiles:
         if game_world.collide(tile, player):
-            player.onTile = True
-
             left_tile, bottom_tile, right_tile, top_tile = tile.get_bb()
             left_player, bottom_player, right_player, top_player = player.get_bb()
 
-            if bottom_tile < bottom_player <= top_tile and player.velocity_y <= 0: # 낙하 중일 때 타일과 만나면 위치 조정
+            if  player.y_velocity <= 0 and bottom_player <= top_tile and top_player > top_tile:
+                player.onTile = True
                 player.y += top_tile - bottom_player
-            break
+                if player.state_machine.cur_state == player.JUMP:
+                    player.y_velocity = 0
+                    player.state_machine.handle_state_event(('JUMP_END', None))
+                break
         else:
             player.onTile = False
 
