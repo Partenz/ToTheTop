@@ -3,6 +3,7 @@ from pico2d import *
 
 import game_framework
 import game_world
+import stage1_mode
 import title_mode
 
 from background import Background
@@ -11,7 +12,8 @@ from tiles import Tile
 
 player = None
 tiles = None
-portal = None
+portal_left = None
+portal_right = None
 
 def handle_events():
     event_list = get_events()
@@ -24,7 +26,7 @@ def handle_events():
             player.handle_event(event)
 
 def init():
-    global player, tiles, portal
+    global player, tiles, portal_left, portal_right
 
     player = Player()
     game_world.add_object(player, 3)
@@ -35,13 +37,16 @@ def init():
     tiles = [Tile(x * 64) for x in range(0, 30 + 1)]
     game_world.add_objects(tiles, 1)
 
-    portal = Portal(1900, 150)
-    game_world.add_object(portal, 1)
+    portal_left = Portal(-100, 150)
+    game_world.add_object(portal_left, 1)
+
+    portal_right = Portal(1900, 150)
+    game_world.add_object(portal_right, 1)
 
 def update():
     game_world.update()
 
-    global player, tiles, portal
+    global player, tiles, portal_left, portal_right
     for tile in tiles:
         if game_world.collide(tile, player):
             left_tile, bottom_tile, right_tile, top_tile = tile.get_bb()
@@ -57,7 +62,12 @@ def update():
         else:
             player.onTile = False
 
-    if game_world.collide(player, portal):
+    if game_world.collide(player, portal_left):
+        print("이전 스테이지로 이동")
+        game_world.stage = 'stage1'
+        game_framework.change_mode(stage1_mode)
+
+    if game_world.collide(player, portal_right):
         print("다음 스테이지로 이동")
 
 
