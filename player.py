@@ -162,6 +162,9 @@ class Hurt:
         if get_time() - self.animation_start_time >= TIME_PER_ACTION:
             self.player.state_machine.handle_state_event(('TIME_OUT', None))
 
+        if self.player.hp <= 0:
+            self.player.state_machine.handle_state_event(('DEATH', None))
+
     def draw(self):
         if self.player.face_dir == 1:  # 오른쪽
             self.player.image['Hurt'].clip_draw(int(self.player.frame) * 64, 64, 64, 64, self.player.x, self.player.y, self.player.width, self.player.height)
@@ -173,15 +176,20 @@ class Hurt:
 class Death:
     def __init__(self, player):
         self.player = player
+        self.animation_start_time = None
 
     def enter(self, event):
         self.player.frame = 0
+        self.animation_start_time = get_time()
 
     def exit(self, event):
         pass
 
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Death'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Death']
+
+        if get_time() - self.animation_start_time >= TIME_PER_ACTION:
+            game_framework.quit()
 
     def draw(self):
         if self.player.face_dir == 1:  # 오른쪽
@@ -223,7 +231,7 @@ class Player:
             self.RUN: {left_down: self.IDLE, right_down: self.IDLE, left_up: self.IDLE, right_up: self.IDLE, space_down: self.JUMP, a_down: self.ATTACK, hurt:self.HURT},
             self.ATTACK: {time_out: self.IDLE},
             self.JUMP: {jump_end: self.IDLE},
-            self.HURT: {time_out: self.IDLE},
+            self.HURT: {time_out: self.IDLE, death: self.DEATH},
             self.DEATH: {}
         })
 
@@ -255,12 +263,11 @@ class Player:
                     self.y_velocity = 0
                     if self.state_machine.cur_state == self.JUMP:
                         self.state_machine.handle_state_event(('JUMP_END', None))
-        elif group == 'player:slime':
+        elif group == 'player:enemy':
             self.hp -= 5
             self.x -= self.face_dir * 50  # 피격 시 약간 밀려남
             self.y += 20  # 피격 시 약간 떠오름
-            if self.state_machine.cur_state == self.IDLE or self.state_machine.cur_state == self.RUN:
-                self.state_machine.handle_state_event(('HURT', None))
+            self.state_machine.handle_state_event(('HURT', None))
 
 
 def left_down(event):
@@ -289,3 +296,6 @@ def jump_end(event):
 
 def hurt(event):
     return event[0] == 'HURT'
+
+def death(event):
+    return event[0] == 'DEATH'

@@ -54,7 +54,7 @@ def init():
     slimes = [Slime(x * 256) for x in range(2, 4 + 1)]
     game_world.add_objects(slimes, 2)
     for slime in slimes:
-        game_world.add_collision_pair('player:slime', None, slime)
+        game_world.add_collision_pair('player:enemy', None, slime)
         game_world.add_collision_pair('slime:weapon', slime, None)
 
 def update():

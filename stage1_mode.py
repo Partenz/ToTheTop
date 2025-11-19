@@ -31,7 +31,7 @@ def init():
         game_world.player = Player()
         game_world.add_object(game_world.player, 3)
         game_world.add_collision_pair('player:tile', game_world.player, None)
-        game_world.add_collision_pair('player:slime', game_world.player, None)
+        game_world.add_collision_pair('player:enemy', game_world.player, None)
 
     # 스테이지 이동에 따른 플레이어 위치 조정
     if game_world.stage_from == 'stage2':
