@@ -55,7 +55,6 @@ class Run:
 
     def enter(self, event):
         self.player.frame = 0
-        self.player.y_velocity = 0
 
         if left_down(event):
             self.player.dir = -1
@@ -241,12 +240,15 @@ class Player:
             left_player, bottom_player, right_player, top_player = self.get_bb()
             left_tile, bottom_tile, right_tile, top_tile = other.get_bb()
 
-            if self.y_velocity <= 0 and bottom_tile < bottom_player < top_tile < top_player:
-                self.on_tile = True
-                self.y += top_tile - bottom_player
-                if self.state_machine.cur_state == self.JUMP:
+            # 플레이어가 아래로 떨어지고 있고, 발이 타일 상단 근처에 있을 때
+            if self.y_velocity <= 0 and abs(bottom_player - top_tile) < 10: # 10은 약간의 오차 허용 범위
+                # 플레이어가 타일의 좌우 범위 내에 있는지 확인
+                if right_player > left_tile and left_player < right_tile:
+                    self.on_tile = True
+                    self.y += top_tile - bottom_player
                     self.y_velocity = 0
-                    self.state_machine.handle_state_event(('JUMP_END', None))
+                    if self.state_machine.cur_state == self.JUMP:
+                        self.state_machine.handle_state_event(('JUMP_END', None))
 
 
 def left_down(event):
