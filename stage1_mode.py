@@ -8,6 +8,7 @@ import title_mode
 
 from background import Background
 from player import Player
+from slime import Slime
 from tiles import Tile
 
 tiles = None
@@ -46,6 +47,7 @@ def init():
 
     portal = Portal(1950, 150)
     game_world.add_object(portal, 1)
+
 
 def update():
     game_world.update()
