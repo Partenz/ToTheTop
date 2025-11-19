@@ -146,15 +146,20 @@ class Jump:
 class Hurt:
     def __init__(self, player):
         self.player = player
+        self.animation_start_time = None
 
     def enter(self, event):
         self.player.frame = 0
+        self.animation_start_time = get_time()
 
     def exit(self, event):
         pass
 
     def do(self):
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Hurt'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Hurt']
+
+        if get_time() - self.animation_start_time >= TIME_PER_ACTION:
+            self.player.state_machine.handle_state_event(('TIME_OUT', None))
 
     def draw(self):
         if self.player.face_dir == 1:  # 오른쪽
@@ -213,11 +218,11 @@ class Player:
         self.DEATH = Death(self)
 
         self.state_machine = StateMachine(self.IDLE, {
-            self.IDLE: {left_down: self.RUN, right_down: self.RUN, space_down: self.JUMP, a_down: self.ATTACK},
-            self.RUN: {left_down: self.IDLE, right_down: self.IDLE, left_up: self.IDLE, right_up: self.IDLE, space_down: self.JUMP, a_down: self.ATTACK},
+            self.IDLE: {left_down: self.RUN, right_down: self.RUN, space_down: self.JUMP, a_down: self.ATTACK, hurt:self.HURT},
+            self.RUN: {left_down: self.IDLE, right_down: self.IDLE, left_up: self.IDLE, right_up: self.IDLE, space_down: self.JUMP, a_down: self.ATTACK, hurt:self.HURT},
             self.ATTACK: {time_out: self.IDLE},
             self.JUMP: {jump_end: self.IDLE},
-            self.HURT: {},
+            self.HURT: {time_out: self.IDLE},
             self.DEATH: {}
         })
 
@@ -249,6 +254,12 @@ class Player:
                     self.y_velocity = 0
                     if self.state_machine.cur_state == self.JUMP:
                         self.state_machine.handle_state_event(('JUMP_END', None))
+        elif group == 'player:slime':
+            self.hp -= 5
+            self.x -= self.face_dir * 20  # 피격 시 약간 밀려남
+            self.y += 10  # 피격 시 약간 떠오름
+            if self.state_machine.cur_state == self.IDLE or self.state_machine.cur_state == self.RUN:
+                self.state_machine.handle_state_event(('HURT', None))
 
 
 def left_down(event):
@@ -274,3 +285,6 @@ def a_down(event):
 
 def jump_end(event):
     return event[0] == 'JUMP_END'
+
+def hurt(event):
+    return event[0] == 'HURT'
