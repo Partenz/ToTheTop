@@ -24,8 +24,12 @@ class Weapon:
 
     def get_bb(self):
         # 무기의 바운딩 박스 반환
-        return [(self.x - 34, self.y - 50, self.x + 34, self.y + 25)]
+        return self.x - 34, self.y - 50, self.x + 34, self.y + 25
 
     def draw(self):
         # 디버깅용으로 바운딩 박스 그리기
-        draw_rectangle(*self.get_bb()[0])
+        draw_rectangle(*self.get_bb())
+
+    def handle_collision(self, group, other):
+        if group == 'slime:weapon':
+            pass

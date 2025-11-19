@@ -3,6 +3,7 @@ from pico2d import load_image, get_time, draw_rectangle
 import random
 
 import game_framework
+import game_world
 
 PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 20 cm
 RUN_SPEED_KMPH = 10.0
@@ -39,14 +40,25 @@ class Slime:
         self.state_start_time = get_time()
 
     def update(self):
-        if get_time() - self.state_start_time > 2: # 2초마다 상태 변경
-            self.state_start_time = get_time()
-            self.state = random.choice(['Idle', 'Run'])
-            if self.state == 'Run':
-                self.dir = random.choice([-1, 1])
-                self.face_dir = self.dir
-            else:
+        if self.state == 'Idle' or self.state == 'Run':
+            if get_time() - self.state_start_time > 2: # 2초마다 상태 변경
+                self.state_start_time = get_time()
+                self.state = random.choice(['Idle', 'Run'])
+                if self.state == 'Run':
+                    self.dir = random.choice([-1, 1])
+                    self.face_dir = self.dir
+                else:
+                    self.dir = 0
+        elif self.state == 'Hurt':
+            if get_time() - self.state_start_time > 0.5:
+                self.state_start_time = get_time()
+                self.state = 'Idle'
                 self.dir = 0
+        elif self.state == 'Death':
+            if get_time() - self.state_start_time > 0.5:
+                # 죽음 애니메이션이 끝난 후 객체 제거
+                game_world.remove_object(self)
+                return
 
         if self.state == 'Run':
             self.x += RUN_SPEED_PPS * self.dir * game_framework.frame_time
@@ -81,3 +93,12 @@ class Slime:
     def handle_collision(self, group, other):
         if group == 'player:slime':
             pass
+        elif group == 'slime:weapon':
+            self.hp -= 10
+            self.x -= self.face_dir * 40  # 넉백 효과
+            self.dir = 0  # 멈춤
+            self.state = 'Hurt'
+            self.state_start_time = get_time()
+            if self.hp <= 0:
+                # 죽음 상태로 전환
+                self.state = 'Death'

@@ -99,7 +99,8 @@ class Attack:
 
         # 무기 객체 생성 및 게임 월드에 추가
         weapon = Weapon(self.player)
-        game_world.add_object(weapon, 1)
+        game_world.add_object(weapon, 3)
+        game_world.add_collision_pair('slime:weapon', None, weapon)
 
     def exit(self, event):
         pass
@@ -256,8 +257,8 @@ class Player:
                         self.state_machine.handle_state_event(('JUMP_END', None))
         elif group == 'player:slime':
             self.hp -= 5
-            self.x -= self.face_dir * 20  # 피격 시 약간 밀려남
-            self.y += 10  # 피격 시 약간 떠오름
+            self.x -= self.face_dir * 50  # 피격 시 약간 밀려남
+            self.y += 20  # 피격 시 약간 떠오름
             if self.state_machine.cur_state == self.IDLE or self.state_machine.cur_state == self.RUN:
                 self.state_machine.handle_state_event(('HURT', None))
 

@@ -55,6 +55,7 @@ def init():
     game_world.add_objects(slimes, 2)
     for slime in slimes:
         game_world.add_collision_pair('player:slime', None, slime)
+        game_world.add_collision_pair('slime:weapon', slime, None)
 
 def update():
     game_world.update()
