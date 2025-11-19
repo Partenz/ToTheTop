@@ -13,7 +13,7 @@ RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
 TIME_PER_ACTION = 1.0
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-FRAMES_PER_ACTION = {'Idle': 12, 'Run': 8, 'Attack' : 8}
+FRAMES_PER_ACTION = {'Idle': 12, 'Run': 8, 'Attack' : 8, 'Hurt' : 5, 'Death' : 7}
 
 GRAVITY = 9.8  # 중력 가속도 (m/s²)
 GRAVITY_PPS = GRAVITY * PIXEL_PER_METER  # 중력을 픽셀 단위로 변환
@@ -142,16 +142,20 @@ class Hurt:
         self.player = player
 
     def enter(self, event):
-        pass
+        self.player.frame = 0
 
     def exit(self, event):
         pass
 
     def do(self):
-        pass
+        self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Hurt'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Hurt']
 
     def draw(self):
-        pass
+        if self.player.face_dir == 1:  # 오른쪽
+            self.player.image['Hurt'].clip_draw(int(self.player.frame) * 64, 64, 64, 64, self.player.x, self.player.y, self.player.width, self.player.height)
+        elif self.player.face_dir == -1:  # 왼쪽
+            self.player.image['Hurt'].clip_draw(int(self.player.frame) * 64, 128, 64, 64, self.player.x, self.player.y, self.player.width, self.player.height)
+
 
 
 class Death:
@@ -159,16 +163,20 @@ class Death:
         self.player = player
 
     def enter(self, event):
-        pass
+        self.player.frame = 0
 
     def exit(self, event):
         pass
 
     def do(self):
-        pass
+        self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Death'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Death']
 
     def draw(self):
-        pass
+        if self.player.face_dir == 1:  # 오른쪽
+            self.player.image['Death'].clip_draw(int(self.player.frame) * 64, 64, 64, 64, self.player.x, self.player.y, self.player.width, self.player.height)
+        elif self.player.face_dir == -1:  # 왼쪽
+            self.player.image['Death'].clip_draw(int(self.player.frame) * 64, 128, 64, 64, self.player.x, self.player.y, self.player.width, self.player.height)
+
 
 class Player:
     def __init__(self, x = 50, y = 128, hp = 100):
