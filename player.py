@@ -137,8 +137,43 @@ class Jump:
             self.player.image['Run'].clip_draw(int(self.player.frame) * 64, 128, 64, 64, self.player.x, self.player.y, self.player.width, self.player.height)
 
 
+class Hurt:
+    def __init__(self, player):
+        self.player = player
+
+    def enter(self, event):
+        pass
+
+    def exit(self, event):
+        pass
+
+    def do(self):
+        pass
+
+    def draw(self):
+        pass
+
+
+class Death:
+    def __init__(self, player):
+        self.player = player
+
+    def enter(self, event):
+        pass
+
+    def exit(self, event):
+        pass
+
+    def do(self):
+        pass
+
+    def draw(self):
+        pass
+
 class Player:
-    def __init__(self, x = 50, y = 128):
+    def __init__(self, x = 50, y = 128, hp = 100):
+        self.hp = hp
+
         self.x , self.y =  x, y
         self.frame = 0
         self.face_dir = 1  # 1: right, -1: left
@@ -153,17 +188,23 @@ class Player:
         self.image['Idle'] = load_image('./resources/player/Player_IDLE.png')
         self.image['Run'] = load_image('./resources/player/Player_Run.png')
         self.image['Attack'] = load_image('./resources/player/Player_Attack.png')
+        self.image['Hurt'] = load_image('./resources/player/Player_Hurt.png')
+        self.image['Death'] = load_image('./resources/player/Player_Death.png')
 
         self.IDLE = Idle(self)
         self.RUN = Run(self)
         self.ATTACK = Attack(self)
         self.JUMP = Jump(self)
+        self.HURT = Hurt(self)
+        self.DEATH = Death(self)
 
         self.state_machine = StateMachine(self.IDLE, {
             self.IDLE: {left_down: self.RUN, right_down: self.RUN, space_down: self.JUMP, a_down: self.ATTACK},
             self.RUN: {left_down: self.IDLE, right_down: self.IDLE, left_up: self.IDLE, right_up: self.IDLE, space_down: self.JUMP, a_down: self.ATTACK},
             self.ATTACK: {time_out: self.IDLE},
-            self.JUMP: {jump_end: self.IDLE}
+            self.JUMP: {jump_end: self.IDLE},
+            self.HURT: {},
+            self.DEATH: {}
         })
 
     def update(self):
