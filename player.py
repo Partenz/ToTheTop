@@ -55,6 +55,8 @@ class Run:
 
     def enter(self, event):
         self.player.frame = 0
+        self.player.y_velocity = 0
+
         if left_down(event):
             self.player.dir = -1
             self.player.face_dir = -1
