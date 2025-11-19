@@ -9,7 +9,6 @@ import title_mode
 from background import Background
 from npc import TraderDrink, TraderWeapon
 from player import Player
-from slime import Slime
 from tiles import Tile
 
 tiles = None

@@ -46,7 +46,7 @@ def init():
     portal_right = Portal(1950, 150)
     game_world.add_object(portal_right, 1)
 
-    slimes = [Slime(x * 128) for x in range(5, 7 + 1)]
+    slimes = [Slime(x * 256) for x in range(2, 4 + 1)]
     game_world.add_objects(slimes, 2)
 
 def update():
