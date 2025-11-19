@@ -3,6 +3,7 @@ from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_SPACE, SDLK
 
 import game_framework
 import game_world
+from Weapon import Weapon
 from state_machine import StateMachine
 
 PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 20 cm
@@ -94,6 +95,10 @@ class Attack:
         self.attack_start_time = get_time()
         self.player.is_attacking = True
         self.player.frame = 0
+
+        # 무기 객체 생성 및 게임 월드에 추가
+        weapon = Weapon(self.player)
+        game_world.add_object(weapon, 1)
 
     def exit(self, event):
         pass
@@ -226,13 +231,7 @@ class Player:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        if self.is_attacking:
-            if self.face_dir == 1:
-                return self.x - 32, self.y - 50, self.x + 100, self.y + 64
-            elif self.face_dir == -1:
-                return self.x - 100, self.y - 50, self.x + 32, self.y + 64
-        else:
-            return self.x - 32, self.y - 50, self.x + 32, self.y + 64
+        return self.x - 32, self.y - 50, self.x + 32, self.y + 64
 
 def left_down(event):
     return event[0] == 'INPUT' and event[1].type == SDL_KEYDOWN and event[1].key == SDLK_LEFT
