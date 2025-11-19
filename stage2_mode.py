@@ -10,7 +10,6 @@ from background import Background
 from player import Player
 from tiles import Tile
 
-player = None
 tiles = None
 portal_left = None
 portal_right = None
@@ -23,16 +22,16 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.change_mode(title_mode)
         else:
-            player.handle_event(event)
+            game_world.player.handle_event(event)
 
 def init():
-    global player, tiles, portal_left, portal_right
+    global tiles, portal_left, portal_right
 
+    # 스테이지 이동에 따른 플레이어 위치 조정
     if game_world.stage_from == 'stage1':
-        player = Player()
+        game_world.player.x, game_world.player.y = 50, 128
     else:
-        player = Player(1800, 128)
-    game_world.add_object(player, 3)
+        game_world.player.x, game_world.player.y = 1800, 128
 
     background = Background()
     game_world.add_object(background, 0)
@@ -43,27 +42,28 @@ def init():
     portal_left = Portal(-100, 150)
     game_world.add_object(portal_left, 1)
 
-    portal_right = Portal(1900, 150)
+    portal_right = Portal(1950, 150)
     game_world.add_object(portal_right, 1)
 
 def update():
     game_world.update()
 
-    global player, tiles, portal_left, portal_right
+    global tiles, portal_left, portal_right
+    player = game_world.player
     for tile in tiles:
         if game_world.collide(tile, player):
             left_tile, bottom_tile, right_tile, top_tile = tile.get_bb()
             left_player, bottom_player, right_player, top_player = player.get_bb()
 
             if  player.y_velocity <= 0 and bottom_player <= top_tile and top_player > top_tile:
-                player.onTile = True
+                player.on_tile = True
                 player.y += top_tile - bottom_player
                 if player.state_machine.cur_state == player.JUMP:
                     player.y_velocity = 0
                     player.state_machine.handle_state_event(('JUMP_END', None))
                 break
         else:
-            player.onTile = False
+            player.on_tile = False
 
     if game_world.collide(player, portal_left):
         print("이전 스테이지로 이동")

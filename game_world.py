@@ -3,6 +3,8 @@ world = [[] for _ in range(4)]
 stage = 'stage1'
 stage_from = None
 
+player = None
+
 def add_object(obj, depth = 0):
     world[depth].append(obj)
 
@@ -32,7 +34,11 @@ def remove_object(obj):
 def clear():
     global world
 
-    world = [[] for _ in range(4)]
+    # 플레이어를 제외한 모든 객체를 월드에서 제거
+    for layer in world:
+        for obj in layer.copy():
+            if obj != player:
+                layer.remove(obj)
 
 def collide(a,b):
     left_a, bottom_a, right_a, top_a = a.get_bb()
