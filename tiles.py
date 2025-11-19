@@ -20,3 +20,7 @@ class Tile:
 
     def get_bb(self):
         return self.x - 32, self.y - 32, self.x + 32, self.y + 20
+
+    def handle_collision(self, group, other):
+        if group == 'player:tile':
+            pass

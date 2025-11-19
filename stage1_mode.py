@@ -30,6 +30,7 @@ def init():
     if game_world.player is None:
         game_world.player = Player()
         game_world.add_object(game_world.player, 3)
+        game_world.add_collision_pair('player:tile', game_world.player, None)
 
     # 스테이지 이동에 따른 플레이어 위치 조정
     if game_world.stage_from == 'stage2':
@@ -45,6 +46,9 @@ def init():
     tiles += [Tile(x * 64, 340) for x in range(9, 12 + 1)]
     game_world.add_objects(tiles, 1)
 
+    for tile in tiles:
+        game_world.add_collision_pair('player:tile', None, tile)
+
     portal = Portal(1950, 150)
     game_world.add_object(portal, 1)
 
@@ -55,25 +59,14 @@ def init():
     game_world.add_object(trader_weapon, 2)
 
 
+
+
 def update():
     game_world.update()
+    game_world.handle_collisions()
 
     global tiles, portal
     player = game_world.player
-    for tile in tiles:
-        if game_world.collide(tile, player):
-            left_tile, bottom_tile, right_tile, top_tile = tile.get_bb()
-            left_player, bottom_player, right_player, top_player = player.get_bb()
-
-            if  player.y_velocity <= 0 and bottom_player <= top_tile and top_player > top_tile:
-                player.on_tile = True
-                player.y += top_tile - bottom_player
-                if player.state_machine.cur_state == player.JUMP:
-                    player.y_velocity = 0
-                    player.state_machine.handle_state_event(('JUMP_END', None))
-                break
-        else:
-            player.on_tile = False
 
     if game_world.collide(player, portal):
         print("다음 스테이지로 이동")

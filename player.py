@@ -221,6 +221,7 @@ class Player:
         })
 
     def update(self):
+        self.on_tile = False
         self.state_machine.update()
 
     def handle_event(self, event):
@@ -232,6 +233,19 @@ class Player:
 
     def get_bb(self):
         return self.x - 32, self.y - 50, self.x + 32, self.y + 64
+
+    def handle_collision(self, group, other):
+        if group == 'player:tile':
+            left_player, bottom_player, right_player, top_player = self.get_bb()
+            left_tile, bottom_tile, right_tile, top_tile = other.get_bb()
+
+            if self.y_velocity <= 0 and bottom_tile < bottom_player < top_tile < top_player:
+                self.on_tile = True
+                self.y += top_tile - bottom_player
+                if self.state_machine.cur_state == self.JUMP:
+                    self.y_velocity = 0
+                    self.state_machine.handle_state_event(('JUMP_END', None))
+
 
 def left_down(event):
     return event[0] == 'INPUT' and event[1].type == SDL_KEYDOWN and event[1].key == SDLK_LEFT
