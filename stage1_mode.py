@@ -7,6 +7,7 @@ import stage2_mode
 import title_mode
 
 from background import Background
+from npc import TraderDrink, TraderWeapon
 from player import Player
 from slime import Slime
 from tiles import Tile
@@ -41,12 +42,18 @@ def init():
     game_world.add_object(background, 0)
 
     tiles = [Tile(x * 64) for x in range(0, 30 + 1)]
-    tiles += [Tile(x * 64, 200) for x in range(11, 13 + 1)]
-    tiles += [Tile(x * 64, 340) for x in range(15, 18 + 1)]
+    tiles += [Tile(x * 64, 200) for x in range(4, 7 + 1)]
+    tiles += [Tile(x * 64, 340) for x in range(9, 12 + 1)]
     game_world.add_objects(tiles, 1)
 
     portal = Portal(1950, 150)
     game_world.add_object(portal, 1)
+
+    trader_drink = TraderDrink()
+    game_world.add_object(trader_drink, 2)
+
+    trader_weapon = TraderWeapon()
+    game_world.add_object(trader_weapon, 2)
 
 
 def update():
