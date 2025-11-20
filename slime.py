@@ -95,7 +95,7 @@ class Slime:
             pass
         elif group == 'slime:weapon':
             self.hp -= 10
-            self.x -= self.face_dir * 40  # 넉백 효과
+            self.x += game_world.player.face_dir * 40  # 넉백 효과
             self.dir = 0  # 멈춤
             self.state = 'Hurt'
             self.state_start_time = get_time()
