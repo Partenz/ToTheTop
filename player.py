@@ -265,8 +265,7 @@ class Player:
                         self.state_machine.handle_state_event(('JUMP_END', None))
         elif group == 'player:enemy':
             self.hp -= 5
-            self.x -= self.face_dir * 50  # 피격 시 약간 밀려남
-            self.y += 20  # 피격 시 약간 떠오름
+            self.x -= self.face_dir * RUN_SPEED_PPS / 5  # 피격 시 약간 밀려남
             self.state_machine.handle_state_event(('HURT', None))
 
 
