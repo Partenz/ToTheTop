@@ -4,6 +4,7 @@ import random
 
 import game_framework
 import game_world
+import common
 
 PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 20 cm
 RUN_SPEED_KMPH = 10.0
@@ -95,7 +96,7 @@ class Slime:
             pass
         elif group == 'slime:weapon':
             self.hp -= 10
-            self.x += game_world.player.face_dir * 40  # 넉백 효과
+            self.x += common.player.face_dir * 40  # 넉백 효과
             self.dir = 0  # 멈춤
             self.state = 'Hurt'
             self.state_start_time = get_time()

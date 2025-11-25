@@ -5,6 +5,7 @@ import game_framework
 import game_world
 import stage2_mode
 import title_mode
+import common
 
 from background import Background
 from npc import TraderDrink, TraderWeapon
@@ -22,22 +23,22 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.change_mode(title_mode)
         else:
-            game_world.player.handle_event(event)
+            common.player.handle_event(event)
 
 def init():
     global tiles, portal
 
-    if game_world.player is None:
-        game_world.player = Player()
-        game_world.add_object(game_world.player, 3)
-        game_world.add_collision_pair('player:tile', game_world.player, None)
-        game_world.add_collision_pair('player:enemy', game_world.player, None)
+    if common.player is None:
+        common.player = Player()
+        game_world.add_object(common.player, 3)
+        game_world.add_collision_pair('player:tile', common.player, None)
+        game_world.add_collision_pair('player:enemy', common.player, None)
 
     # 스테이지 이동에 따른 플레이어 위치 조정
     if game_world.stage_from == 'stage2':
-        game_world.player.x, game_world.player.y = 1800, 128
+        common.player.x, common.player.y = 1800, 128
     else:
-        game_world.player.x, game_world.player.y = 50, 128
+        common.player.x, common.player.y = 50, 128
 
     background = Background()
     game_world.add_object(background, 0)
@@ -67,9 +68,8 @@ def update():
     game_world.handle_collisions()
 
     global tiles, portal
-    player = game_world.player
 
-    if game_world.collide(player, portal):
+    if game_world.collide(common.player, portal):
         print("다음 스테이지로 이동")
         game_world.stage = 'stage2'
         game_world.stage_from = 'stage1'

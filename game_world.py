@@ -1,9 +1,9 @@
+import common
+
 world = [[] for _ in range(4)]
 
 stage = 'stage1'
 stage_from = None
-
-player = None
 
 collision_pairs = {}
 
@@ -55,7 +55,7 @@ def clear():
     # 플레이어를 제외한 모든 객체를 월드에서 제거
     for layer in world:
         for obj in layer.copy():
-            if obj != player:
+            if obj != common.player:
                 layer.remove(obj)
                 remove_collision_pairs(obj)
 

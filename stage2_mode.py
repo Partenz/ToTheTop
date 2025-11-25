@@ -5,6 +5,7 @@ import game_framework
 import game_world
 import stage1_mode
 import title_mode
+import common
 
 from background import Background
 from player import Player
@@ -24,16 +25,16 @@ def handle_events():
             game_framework.change_mode(title_mode)
             game_world.stage = 'stage1'
         else:
-            game_world.player.handle_event(event)
+            common.player.handle_event(event)
 
 def init():
     global tiles, portal_left, portal_right
 
     # 스테이지 이동에 따른 플레이어 위치 조정
     if game_world.stage_from == 'stage1':
-        game_world.player.x, game_world.player.y = 50, 128
+        common.player.x, common.player.y = 50, 128
     else:
-        game_world.player.x, game_world.player.y = 1800, 128
+        common.player.x, common.player.y = 1800, 128
 
     background = Background()
     game_world.add_object(background, 0)
@@ -62,15 +63,14 @@ def update():
     game_world.handle_collisions() # handle_collisions 호출
 
     global tiles, portal_left, portal_right
-    player = game_world.player
 
-    if game_world.collide(player, portal_left):
+    if game_world.collide(common.player, portal_left):
         print("이전 스테이지로 이동")
         game_world.stage = 'stage1'
         game_world.stage_from = 'stage2'
         game_framework.change_mode(stage1_mode)
 
-    if game_world.collide(player, portal_right):
+    if game_world.collide(common.player, portal_right):
         print("다음 스테이지로 이동")
 
 
