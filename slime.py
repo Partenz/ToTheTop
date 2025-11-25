@@ -96,7 +96,7 @@ class Slime:
             pass
         elif group == 'slime:weapon':
             self.hp -= 10
-            self.x += common.player.face_dir * 40  # 넉백 효과
+            self.x += common.player.face_dir * RUN_SPEED_PPS / 2  # 넉백 효과
             self.dir = 0  # 멈춤
             self.state = 'Hurt'
             self.state_start_time = get_time()
