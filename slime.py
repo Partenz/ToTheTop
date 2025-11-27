@@ -5,6 +5,8 @@ import random
 import game_framework
 import game_world
 import common
+from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
+
 
 PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 20 cm
 RUN_SPEED_KMPH = 10.0
@@ -103,3 +105,7 @@ class Slime:
             if self.hp <= 0:
                 # 죽음 상태로 전환
                 self.state = 'Death'
+
+    def build_behavior_tree(self):
+        root = None
+        self.bt = BehaviorTree(root)
