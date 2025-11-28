@@ -119,7 +119,8 @@ class Slime:
         pass
 
     def distance_less_than(self, x1, y1, x2, y2, r):
-        pass
+        distance2 = (x2 - x1) ** 2 + (y2 - y1) ** 2
+        return distance2 < (PIXEL_PER_METER * r) ** 2
 
     def if_nearby_player(self):
         pass
