@@ -42,7 +42,10 @@ class Slime:
         self.state = 'Idle'
         self.state_start_time = get_time()
 
+        self.build_behavior_tree()
+
     def update(self):
+        self.bt.run()
         if self.state == 'Idle' or self.state == 'Run':
             if get_time() - self.state_start_time > 2: # 2초마다 상태 변경
                 self.state_start_time = get_time()
@@ -107,5 +110,15 @@ class Slime:
                 self.state = 'Death'
 
     def build_behavior_tree(self):
-        root = None
+
+        a1 = Action('순찰 위치 설정', self.set_patrol_location)
+        a2 = Action('지점으로 이동', self.move_to_location)
+        a3 = Action('공격', self.attack)
+
+        c1 = Condition('플레이어가 가까이 있는가?', self.if_nearby_player)
+
+        attack_if_nearby_player = Sequence('플레이어가 가까이 있다면 공격', c1, a3)
+        patrol = Sequence('주변을 순찰', a1, a2)
+
+        root = attack_or_patrol = Selector('공격 아니면 순찰', attack_if_nearby_player, patrol)
         self.bt = BehaviorTree(root)
