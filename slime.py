@@ -123,7 +123,10 @@ class Slime:
         return distance2 < (PIXEL_PER_METER * r) ** 2
 
     def if_nearby_player(self):
-        pass
+        if self.distance_less_than(self.x, self.y, common.player.x, common.player.y, 5):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
 
     def build_behavior_tree(self):
 
