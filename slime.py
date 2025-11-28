@@ -109,6 +109,21 @@ class Slime:
                 # 죽음 상태로 전환
                 self.state = 'Death'
 
+    def set_patrol_location(self):
+        pass
+
+    def move_to_location(self):
+        pass
+
+    def attack(self):
+        pass
+
+    def distance_less_than(self, x1, y1, x2, y2, r):
+        pass
+
+    def if_nearby_player(self):
+        pass
+
     def build_behavior_tree(self):
 
         a1 = Action('순찰 위치 설정', self.set_patrol_location)
