@@ -14,7 +14,7 @@ RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
-TIME_PER_ACTION = 1.0
+TIME_PER_ACTION = 0.5
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = {'Idle': 6, 'Run': 8, 'Attack' : 10, 'Hurt' : 5, 'Death' : 10}
 
@@ -56,38 +56,16 @@ class Slime:
             self.y_velocity -= GRAVITY_PPS * game_framework.frame_time
             self.y += self.y_velocity * game_framework.frame_time
 
-        if self.state == 'Idle' or self.state == 'Run':
-            if get_time() - self.state_start_time > 2: # 2초마다 상태 변경
-                self.state_start_time = get_time()
-                self.state = random.choice(['Idle', 'Run'])
-                if self.state == 'Run':
-                    self.dir = random.choice([-1, 1])
-                    self.face_dir = self.dir
-                else:
-                    self.dir = 0
-        elif self.state == 'Hurt':
-            if get_time() - self.state_start_time > 0.5:
+        if self.state == 'Hurt':
+            if get_time() - self.state_start_time > TIME_PER_ACTION:
                 self.state_start_time = get_time()
                 self.state = 'Idle'
                 self.dir = 0
         elif self.state == 'Death':
-            if get_time() - self.state_start_time > 0.5:
+            if get_time() - self.state_start_time > TIME_PER_ACTION:
                 # 죽음 애니메이션이 끝난 후 객체 제거
                 game_world.remove_object(self)
                 return
-
-        if self.state == 'Run':
-            self.x += RUN_SPEED_PPS * self.dir * game_framework.frame_time
-            # 순찰 범위 제한
-            if self.x > self.start_x + self.patrol_range:
-                self.x = self.start_x + self.patrol_range
-                self.dir = -1
-                self.face_dir = -1
-
-            elif self.x < self.start_x - self.patrol_range:
-                self.x = self.start_x - self.patrol_range
-                self.dir = 1
-                self.face_dir = 1
 
 
         self.frame = (self.frame + FRAMES_PER_ACTION[self.state] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION[self.state]
@@ -137,14 +115,26 @@ class Slime:
         pass
 
     def attack(self):
-        pass
+        self.state = 'Attack'
+        self.state_start_time = get_time()
+        self.dir = 0  # 공격하는 동안 멈춤
+        if common.player.x > self.x:
+            self.face_dir = 1
+        else:
+            self.face_dir = -1
+
+        if get_time() - self.state_start_time < TIME_PER_ACTION:
+            return BehaviorTree.RUNNING
+        else:
+            self.state = 'Idle'
+            return BehaviorTree.SUCCESS
 
     def distance_less_than(self, x1, y1, x2, y2, r):
         distance2 = (x2 - x1) ** 2 + (y2 - y1) ** 2
         return distance2 < (PIXEL_PER_METER * r) ** 2
 
-    def if_nearby_player(self):
-        if self.distance_less_than(self.x, self.y, common.player.x, common.player.y, 5):
+    def if_nearby_player(self, r):
+        if self.distance_less_than(self.x, self.y, common.player.x, common.player.y, r):
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
@@ -155,7 +145,7 @@ class Slime:
         a2 = Action('지점으로 이동', self.move_to_location)
         a3 = Action('공격', self.attack)
 
-        c1 = Condition('플레이어가 가까이 있는가?', self.if_nearby_player)
+        c1 = Condition('플레이어가 가까이 있는가?', self.if_nearby_player, 2)
 
         attack_if_nearby_player = Sequence('플레이어가 가까이 있다면 공격', c1, a3)
         patrol = Sequence('주변을 순찰', a1, a2)
