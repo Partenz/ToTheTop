@@ -38,7 +38,7 @@ def init():
     if game_world.stage_from == 'stage2':
         common.player.x, common.player.y = 1800, 128
     else:
-        common.player.x, common.player.y = 50, 128
+        common.player.x, common.player.y = 700, 128
 
     background = Background()
     game_world.add_object(background, 0)
