@@ -18,10 +18,13 @@ TIME_PER_ACTION = 1.0
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = {'Idle': 6, 'Run': 8, 'Attack' : 10, 'Hurt' : 5, 'Death' : 10}
 
+GRAVITY = 9.8  # 중력 가속도 (m/s²)
+GRAVITY_PPS = GRAVITY * PIXEL_PER_METER  # 중력을 픽셀 단위로 변환
+
 class Slime:
     image = None
 
-    def __init__(self, x = 50, y = 100, hp = 20):
+    def __init__(self, x = 50, y = 150, hp = 20):
         if Slime.image is None:
             Slime.image = {}
             Slime.image['Idle'] = load_image('./resources/slime/Slime_IDLE.png')
@@ -32,6 +35,8 @@ class Slime:
 
         self.hp = hp
 
+        self.on_tile = False
+        self.y_velocity = 0
         self.x , self.y =  x, y
         self.start_x = x  # 초기 위치 저장
         self.patrol_range = 200  # 순찰 범위 (좌우 픽셀 수)
@@ -46,6 +51,11 @@ class Slime:
 
     def update(self):
         self.bt.run()
+        # 타일 위에 있지 않으면 추락
+        if not self.on_tile:
+            self.y_velocity -= GRAVITY_PPS * game_framework.frame_time
+            self.y += self.y_velocity * game_framework.frame_time
+
         if self.state == 'Idle' or self.state == 'Run':
             if get_time() - self.state_start_time > 2: # 2초마다 상태 변경
                 self.state_start_time = get_time()
@@ -108,6 +118,17 @@ class Slime:
             if self.hp <= 0:
                 # 죽음 상태로 전환
                 self.state = 'Death'
+        elif group == 'enemy:tile':
+            left_enemy, bottom_enemy, right_enemy, top_enemy = self.get_bb()
+            left_tile, bottom_tile, right_tile, top_tile = other.get_bb()
+
+            # 플레이어가 아래로 떨어지고 있고, 발이 타일 상단 근처에 있을 때
+            if self.y_velocity <= 0 and abs(bottom_enemy - top_tile) < 10: # 10은 약간의 오차 허용 범위
+                # 플레이어가 타일의 좌우 범위 내에 있는지 확인
+                if right_enemy > left_tile and left_enemy < right_tile:
+                    self.on_tile = True
+                    self.y += top_tile - bottom_enemy
+                    self.y_velocity = 0
 
     def set_patrol_location(self):
         pass

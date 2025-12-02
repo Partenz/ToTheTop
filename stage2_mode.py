@@ -47,6 +47,7 @@ def init():
     # 충돌 쌍 추가
     for tile in tiles:
         game_world.add_collision_pair('player:tile', None, tile)
+        game_world.add_collision_pair('enemy:tile', None, tile)
 
     portal_left = Portal(-100, 150)
     game_world.add_object(portal_left, 1)
@@ -54,11 +55,14 @@ def init():
     portal_right = Portal(1950, 150)
     game_world.add_object(portal_right, 1)
 
-    slimes = [Slime(x * 256) for x in range(2, 4 + 1)]
+    slimes = [Slime(x * 128) for x in range(2, 10 + 1)]
+    slimes += [Slime(x * 128, 250) for x in range(3, 6 + 1)]
+    slimes += [Slime(x * 128, 400) for x in range(8, 11 + 1)]
     game_world.add_objects(slimes, 2)
     for slime in slimes:
         game_world.add_collision_pair('player:enemy', None, slime)
         game_world.add_collision_pair('slime:weapon', slime, None)
+        game_world.add_collision_pair('enemy:tile', slime, None)
 
 def update():
     game_world.update()
