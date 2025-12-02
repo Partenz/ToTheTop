@@ -40,6 +40,8 @@ def init():
     game_world.add_object(background, 0)
 
     tiles = [Tile(x * 64) for x in range(0, 30 + 1)]
+    tiles += [Tile(x * 64, 200) for x in range(4, 14 + 1)]
+    tiles += [Tile(x * 64, 340) for x in range(16, 25 + 1)]
     game_world.add_objects(tiles, 1)
 
     # 충돌 쌍 추가
