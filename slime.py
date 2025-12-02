@@ -5,6 +5,7 @@ import random
 import game_framework
 import game_world
 import common
+import stage2_mode
 from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
 
 
@@ -38,8 +39,7 @@ class Slime:
         self.on_tile = False
         self.y_velocity = 0
         self.x , self.y =  x, y
-        self.start_x = x  # 초기 위치 저장
-        self.patrol_range = 200  # 순찰 범위 (좌우 픽셀 수)
+        self.tx = None
         self.frame = random.randint(0, 6)
         self.face_dir = 1  # 1: right, -1: left
         self.dir = 0 # 0 정지 1 오른쪽 -1 왼쪽
@@ -50,6 +50,7 @@ class Slime:
         self.build_behavior_tree()
 
     def update(self):
+        self.on_tile = False
         self.bt.run()
         # 타일 위에 있지 않으면 추락
         if not self.on_tile:
@@ -100,19 +101,33 @@ class Slime:
             left_enemy, bottom_enemy, right_enemy, top_enemy = self.get_bb()
             left_tile, bottom_tile, right_tile, top_tile = other.get_bb()
 
-            # 플레이어가 아래로 떨어지고 있고, 발이 타일 상단 근처에 있을 때
+            #  아래로 떨어지고 있고, 발이 타일 상단 근처에 있을 때
             if self.y_velocity <= 0 and abs(bottom_enemy - top_tile) < 10: # 10은 약간의 오차 허용 범위
-                # 플레이어가 타일의 좌우 범위 내에 있는지 확인
+                #  타일의 좌우 범위 내에 있는지 확인
                 if right_enemy > left_tile and left_enemy < right_tile:
                     self.on_tile = True
                     self.y += top_tile - bottom_enemy
                     self.y_velocity = 0
 
     def set_patrol_location(self):
-        pass
+        self.tx = random.randint(int(self.x) - 100, int(self.x) + 100)
+        return BehaviorTree.SUCCESS
 
     def move_to_location(self):
-        pass
+        self.state = 'Run'
+        if abs(self.tx - self.x) < 5:
+            self.dir = 0
+            self.state = 'Idle'
+            return BehaviorTree.SUCCESS
+        elif self.tx > self.x:
+            self.dir = 1
+            self.face_dir = 1
+        else:
+            self.dir = -1
+            self.face_dir = -1
+
+        self.x += self.dir * RUN_SPEED_PPS * game_framework.frame_time
+        return BehaviorTree.RUNNING
 
     def attack(self):
         self.state = 'Attack'
@@ -127,6 +142,13 @@ class Slime:
             return BehaviorTree.RUNNING
         else:
             self.state = 'Idle'
+            self.state_start_time = get_time()
+            return BehaviorTree.SUCCESS
+
+    def wait_after_attack(self):
+        if get_time() - self.state_start_time < 2.0:
+            return BehaviorTree.RUNNING
+        else:
             return BehaviorTree.SUCCESS
 
     def distance_less_than(self, x1, y1, x2, y2, r):
@@ -144,11 +166,13 @@ class Slime:
         a1 = Action('순찰 위치 설정', self.set_patrol_location)
         a2 = Action('지점으로 이동', self.move_to_location)
         a3 = Action('공격', self.attack)
+        a4 = Action('공격 후 대기', self.wait_after_attack)
 
         c1 = Condition('플레이어가 가까이 있는가?', self.if_nearby_player, 2)
 
-        attack_if_nearby_player = Sequence('플레이어가 가까이 있다면 공격', c1, a3)
+        attack_if_nearby_player = Sequence('플레이어가 가까이 있다면 공격', c1, a3, a4)
         patrol = Sequence('주변을 순찰', a1, a2)
+
 
         root = attack_or_patrol = Selector('공격 아니면 순찰', attack_if_nearby_player, patrol)
         self.bt = BehaviorTree(root)
