@@ -57,7 +57,11 @@ class Slime:
             self.y_velocity -= GRAVITY_PPS * game_framework.frame_time
             self.y += self.y_velocity * game_framework.frame_time
 
-        if self.state == 'Hurt':
+        if self.state == 'Attack':
+            if get_time() - self.state_start_time > TIME_PER_ACTION:
+                self.state_start_time = get_time()
+                self.state = 'Idle'
+        elif self.state == 'Hurt':
             if get_time() - self.state_start_time > TIME_PER_ACTION:
                 self.state_start_time = get_time()
                 self.state = 'Idle'
@@ -138,12 +142,7 @@ class Slime:
         else:
             self.face_dir = -1
 
-        if get_time() - self.state_start_time < TIME_PER_ACTION:
-            return BehaviorTree.RUNNING
-        else:
-            self.state = 'Idle'
-            self.state_start_time = get_time()
-            return BehaviorTree.SUCCESS
+        return BehaviorTree.SUCCESS
 
     def wait_after_attack(self):
         if get_time() - self.state_start_time < 2.0:
@@ -172,6 +171,7 @@ class Slime:
 
         attack_if_nearby_player = Sequence('플레이어가 가까이 있다면 공격', c1, a3, a4)
         patrol = Sequence('주변을 순찰', a1, a2)
+
 
 
         root = attack_or_patrol = Selector('공격 아니면 순찰', attack_if_nearby_player, patrol)
