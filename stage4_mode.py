@@ -42,7 +42,7 @@ def init():
 
 
     # 스테이지 이동에 따른 플레이어 위치 조정
-    if game_world.stage_from == 'stage2':
+    if game_world.stage_from == 'stage3':
         common.player.x, common.player.y = 50, 128
     else:
         common.player.x, common.player.y = 1800, 128
@@ -64,8 +64,8 @@ def init():
     portal_right = Portal(1950, 150)
     game_world.add_object(portal_right, 1)
 
-    boss = Boss()
-    game_world.add_objects(boss, 2)
+    boss = Boss(1000, 600)
+    game_world.add_object(boss, 2)
     game_world.add_collision_pair('player:enemy', None, boss)
     game_world.add_collision_pair('enemy:weapon', boss, None)
     game_world.add_collision_pair('enemy:tile', boss, None)
