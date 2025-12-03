@@ -103,7 +103,7 @@ class Slime:
         if group == 'player:enemy':
             pass
         elif group == 'slime:weapon':
-            if not self.if_hurt:
+            if not self.if_hurt and not self.state == 'Death':
                 self.hp -= 10
                 self.if_hurt = True
                 self.frame = 0
