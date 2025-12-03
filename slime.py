@@ -35,6 +35,7 @@ class Slime:
             Slime.image['Death'] = load_image('./resources/slime/Slime_Death.png')
 
         self.hp = hp
+        self.if_hurt = False
 
         self.on_tile = False
         self.y_velocity = 0
@@ -51,7 +52,9 @@ class Slime:
 
     def update(self):
         self.on_tile = False
-        self.bt.run()
+        if self.state != 'Hurt' and self.state != 'Death':
+            self.bt.run()
+
         # 타일 위에 있지 않으면 추락
         if not self.on_tile:
             self.y_velocity -= GRAVITY_PPS * game_framework.frame_time
@@ -66,6 +69,7 @@ class Slime:
                 self.state_start_time = get_time()
                 self.state = 'Idle'
                 self.dir = 0
+                self.if_hurt = False
         elif self.state == 'Death':
             if get_time() - self.state_start_time > TIME_PER_ACTION:
                 # 죽음 애니메이션이 끝난 후 객체 제거
@@ -93,14 +97,17 @@ class Slime:
         if group == 'player:enemy':
             pass
         elif group == 'slime:weapon':
-            self.hp -= 10
-            self.x += common.player.face_dir * RUN_SPEED_PPS / 2  # 넉백 효과
-            self.dir = 0  # 멈춤
-            self.state = 'Hurt'
-            self.state_start_time = get_time()
+            if not self.if_hurt:
+                self.hp -= 10
+                self.if_hurt = True
+                self.frame = 0
+                self.dir = 0  # 멈춤
+                self.state = 'Hurt'
+                self.state_start_time = get_time()
             if self.hp <= 0:
                 # 죽음 상태로 전환
                 self.state = 'Death'
+                self.if_hurt = False
         elif group == 'enemy:tile':
             left_enemy, bottom_enemy, right_enemy, top_enemy = self.get_bb()
             left_tile, bottom_tile, right_tile, top_tile = other.get_bb()
@@ -135,6 +142,7 @@ class Slime:
 
     def attack(self):
         self.state = 'Attack'
+        self.frame = 0
         self.state_start_time = get_time()
         self.dir = 0  # 공격하는 동안 멈춤
         if common.player.x > self.x:
