@@ -9,6 +9,7 @@ class Background:
         self.image['stage1'] = load_image('./resources/background/start_bg.png')
         self.image['stage2'] = load_image('./resources/background/stage2_bg.png')
         self.image['stage3'] = load_image('./resources/background/stage3_bg.png')
+        self.image['stage4'] = load_image('./resources/background/stage4_bg.png')
 
     def update(self):
         pass

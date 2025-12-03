@@ -5,7 +5,7 @@ import game_framework
 import game_world
 import stage1_mode
 import stage2_mode
-import stage4_mode
+import stage3_mode
 import title_mode
 import common
 
@@ -43,7 +43,6 @@ def init():
     game_world.add_object(background, 0)
 
     tiles = [Tile(x * 64) for x in range(0, 30 + 1)]
-    tiles += [Tile(x * 64, 200) for x in range(7, 22 + 1)]
     game_world.add_objects(tiles, 1)
 
     # 충돌 쌍 추가
@@ -57,13 +56,11 @@ def init():
     portal_right = Portal(1950, 150)
     game_world.add_object(portal_right, 1)
 
-    mushrooms = [Mushroom(x * 128) for x in range(2, 10 + 1)]
-
-    game_world.add_objects(mushrooms, 2)
-    for mushroom in mushrooms:
-        game_world.add_collision_pair('player:enemy', None, mushroom)
-        game_world.add_collision_pair('slime:weapon', mushroom, None)
-        game_world.add_collision_pair('enemy:tile', mushroom, None)
+    boss = Boss()
+    game_world.add_objects(boss, 2)
+    game_world.add_collision_pair('player:enemy', None, boss)
+    game_world.add_collision_pair('slime:weapon', boss, None)
+    game_world.add_collision_pair('enemy:tile', boss, None)
 
 def update():
     game_world.update()
@@ -73,15 +70,12 @@ def update():
 
     if game_world.collide(common.player, portal_left):
         print("이전 스테이지로 이동")
-        game_world.stage = 'stage2'
-        game_world.stage_from = 'stage3'
-        game_framework.change_mode(stage2_mode)
+        game_world.stage = 'stage3'
+        game_world.stage_from = 'stage4'
+        game_framework.change_mode(stage3_mode)
 
     if game_world.collide(common.player, portal_right):
         print("다음 스테이지로 이동")
-        game_world.stage = 'stage4'
-        game_world.stage_from = 'stage3'
-        game_framework.change_mode(stage4_mode)
 
 
 def draw():
