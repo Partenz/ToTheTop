@@ -9,6 +9,7 @@ import title_mode
 import common
 
 from background import Background
+from mushroom import Mushroom
 from player import Player
 from slime import Slime
 from tiles import Tile
@@ -55,13 +56,13 @@ def init():
     portal_right = Portal(1950, 150)
     game_world.add_object(portal_right, 1)
 
-    slimes = [Slime(x * 128) for x in range(2, 10 + 1)]
+    mushrooms = [Mushroom(x * 128) for x in range(2, 10 + 1)]
 
-    game_world.add_objects(slimes, 2)
-    for slime in slimes:
-        game_world.add_collision_pair('player:enemy', None, slime)
-        game_world.add_collision_pair('slime:weapon', slime, None)
-        game_world.add_collision_pair('enemy:tile', slime, None)
+    game_world.add_objects(mushrooms, 2)
+    for mushroom in mushrooms:
+        game_world.add_collision_pair('player:enemy', None, mushroom)
+        game_world.add_collision_pair('slime:weapon', mushroom, None)
+        game_world.add_collision_pair('enemy:tile', mushroom, None)
 
 def update():
     game_world.update()
