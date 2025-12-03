@@ -152,6 +152,8 @@ class Hurt:
     def enter(self, event):
         self.player.frame = 0
         self.animation_start_time = get_time()
+        self.player.hp -= 5
+        self.player.x -= self.player.face_dir * RUN_SPEED_PPS / 5  # 피격 시 약간 밀려남
 
     def exit(self, event):
         pass
@@ -264,8 +266,6 @@ class Player:
                     if self.state_machine.cur_state == self.JUMP:
                         self.state_machine.handle_state_event(('JUMP_END', None))
         elif group == 'player:enemy':
-            self.hp -= 5
-            self.x -= self.face_dir * RUN_SPEED_PPS / 5  # 피격 시 약간 밀려남
             self.state_machine.handle_state_event(('HURT', None))
 
 
