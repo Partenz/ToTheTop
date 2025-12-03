@@ -10,6 +10,7 @@ class Tile:
         self.y = y
         self.image['stage1'] = load_image('./resources/tile/default_dirt_tile.png')
         self.image['stage2'] = load_image('./resources/tile/default_dirt_tile.png')
+        self.image['stage3'] = load_image('./resources/tile/default_dirt_tile.png')
 
     def update(self):
         pass

@@ -4,7 +4,7 @@ from pico2d import *
 import game_framework
 import game_world
 import stage1_mode
-import stage3_mode
+import stage2_mode
 import title_mode
 import common
 
@@ -32,7 +32,7 @@ def init():
     global tiles, portal_left, portal_right
 
     # 스테이지 이동에 따른 플레이어 위치 조정
-    if game_world.stage_from == 'stage1':
+    if game_world.stage_from == 'stage2':
         common.player.x, common.player.y = 50, 128
     else:
         common.player.x, common.player.y = 1800, 128
@@ -41,8 +41,7 @@ def init():
     game_world.add_object(background, 0)
 
     tiles = [Tile(x * 64) for x in range(0, 30 + 1)]
-    tiles += [Tile(x * 64, 200) for x in range(4, 14 + 1)]
-    tiles += [Tile(x * 64, 340) for x in range(16, 25 + 1)]
+    tiles += [Tile(x * 64, 200) for x in range(7, 22 + 1)]
     game_world.add_objects(tiles, 1)
 
     # 충돌 쌍 추가
@@ -57,8 +56,7 @@ def init():
     game_world.add_object(portal_right, 1)
 
     slimes = [Slime(x * 128) for x in range(2, 10 + 1)]
-    slimes += [Slime(x * 128, 250) for x in range(3, 6 + 1)]
-    slimes += [Slime(x * 128, 400) for x in range(8, 11 + 1)]
+
     game_world.add_objects(slimes, 2)
     for slime in slimes:
         game_world.add_collision_pair('player:enemy', None, slime)
@@ -73,15 +71,12 @@ def update():
 
     if game_world.collide(common.player, portal_left):
         print("이전 스테이지로 이동")
-        game_world.stage = 'stage1'
-        game_world.stage_from = 'stage2'
-        game_framework.change_mode(stage1_mode)
+        game_world.stage = 'stage2'
+        game_world.stage_from = 'stage3'
+        game_framework.change_mode(stage2_mode)
 
     if game_world.collide(common.player, portal_right):
         print("다음 스테이지로 이동")
-        game_world.stage = 'stage3'
-        game_world.stage_from = 'stage2'
-        game_framework.change_mode(stage3_mode)
 
 
 def draw():
