@@ -101,7 +101,7 @@ class Attack:
         # 무기 객체 생성 및 게임 월드에 추가
         weapon = Weapon(self.player)
         game_world.add_object(weapon, 3)
-        game_world.add_collision_pair('slime:weapon', None, weapon)
+        game_world.add_collision_pair('enemy:weapon', None, weapon)
 
     def exit(self, event):
         pass

@@ -59,7 +59,7 @@ def init():
     boss = Boss()
     game_world.add_objects(boss, 2)
     game_world.add_collision_pair('player:enemy', None, boss)
-    game_world.add_collision_pair('slime:weapon', boss, None)
+    game_world.add_collision_pair('enemy:weapon', boss, None)
     game_world.add_collision_pair('enemy:tile', boss, None)
 
 def update():

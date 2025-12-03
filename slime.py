@@ -102,7 +102,7 @@ class Slime:
     def handle_collision(self, group, other):
         if group == 'player:enemy':
             pass
-        elif group == 'slime:weapon':
+        elif group == 'enemy:weapon':
             if not self.if_hurt and not self.state == 'Death':
                 self.hp -= 10
                 self.if_hurt = True

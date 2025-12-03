@@ -62,7 +62,7 @@ def init():
     game_world.add_objects(mushrooms, 2)
     for mushroom in mushrooms:
         game_world.add_collision_pair('player:enemy', None, mushroom)
-        game_world.add_collision_pair('slime:weapon', mushroom, None)
+        game_world.add_collision_pair('enemy:weapon', mushroom, None)
         game_world.add_collision_pair('enemy:tile', mushroom, None)
 
 def update():
