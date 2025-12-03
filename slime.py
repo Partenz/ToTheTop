@@ -52,7 +52,7 @@ class Slime:
 
     def update(self):
         self.on_tile = False
-        if self.state != 'Hurt' and self.state != 'Death':
+        if self.state != 'Hurt' and self.state != 'Death' and self.state != 'Attack':
             self.bt.run()
 
         # 타일 위에 있지 않으면 추락
@@ -88,7 +88,13 @@ class Slime:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - 32, self.y - 20, self.x + 32, self.y + 32
+        if self.state == 'Attack':
+            if self.face_dir == 1:
+                return self.x - 32, self.y - 20, self.x + 64, self.y + 32
+            elif self.face_dir == -1:
+                return self.x - 64, self.y - 20, self.x + 32, self.y + 32
+        else:
+            return self.x - 32, self.y - 20, self.x + 32, self.y + 32
 
     def handle_event(self, event):
         pass
