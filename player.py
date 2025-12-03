@@ -3,6 +3,7 @@ from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_SPACE, SDLK
 
 import game_framework
 import game_world
+import stage1_mode
 from Weapon import Weapon
 from state_machine import StateMachine
 
@@ -191,7 +192,12 @@ class Death:
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Death'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Death']
 
         if get_time() - self.animation_start_time >= TIME_PER_ACTION:
-            game_framework.quit()
+            game_framework.change_mode(stage1_mode)
+            game_world.stage = 'stage1'
+            game_world.stage_from = None
+            self.player.hp = 100
+            self.player.frame = 0
+            self.player.state_machine.handle_state_event(('TIME_OUT', None))
 
     def draw(self):
         if self.player.face_dir == 1:  # 오른쪽
@@ -234,7 +240,7 @@ class Player:
             self.ATTACK: {time_out: self.IDLE},
             self.JUMP: {jump_end: self.IDLE},
             self.HURT: {time_out: self.IDLE, death: self.DEATH},
-            self.DEATH: {}
+            self.DEATH: {time_out: self.IDLE}
         })
 
     def update(self):
