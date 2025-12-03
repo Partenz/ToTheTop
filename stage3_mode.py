@@ -33,6 +33,13 @@ def handle_events():
 def init():
     global tiles, portal_left, portal_right
 
+    if common.player is None:
+        common.player = Player()
+        game_world.add_object(common.player, 3)
+        game_world.add_collision_pair('player:tile', common.player, None)
+        game_world.add_collision_pair('player:enemy', common.player, None)
+
+
     # 스테이지 이동에 따른 플레이어 위치 조정
     if game_world.stage_from == 'stage2':
         common.player.x, common.player.y = 50, 128
