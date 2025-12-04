@@ -31,5 +31,5 @@ class Weapon:
         draw_rectangle(*self.get_bb())
 
     def handle_collision(self, group, other):
-        if group == 'slime:weapon':
+        if group == 'enemy:weapon':
             pass
