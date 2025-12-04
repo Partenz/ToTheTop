@@ -137,10 +137,20 @@ class Boss:
         pass
 
     def is_attack_all_hand(self):
-        pass
+        ran_choice = random.choice([True, False])
+
+        if ran_choice:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
 
     def is_what_attack(self):
-        pass
+        ran_choice = random.choice([True, False])
+
+        if ran_choice:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
 
     def set_state_idle(self):
         self.state = 'Idle'
