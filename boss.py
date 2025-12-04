@@ -51,11 +51,14 @@ class Boss:
         self.state = 'Appearance'
         self.state_start_time = get_time()
 
+        self.attack_cooldown = 2.0  # 2초 쿨타임
+        self.last_attack_time = 0
+
         self.build_behavior_tree()
 
     def update(self):
         self.on_tile = False
-        if self.state != 'Hurt' and self.state != 'Death' and self.state != 'Attack':
+        if self.state != 'Hurt' and self.state != 'Death' and not self.state.startswith('Attack'):
             self.bt.run()
 
         # 타일 위에 있지 않으면 추락
@@ -67,10 +70,11 @@ class Boss:
             if get_time() - self.state_start_time > TIME_PER_ACTION:
                 self.state_start_time = get_time()
                 self.state = 'Idle'
-        elif self.state == 'Attack':
+        elif self.state.startswith('Attack'):
             if get_time() - self.state_start_time > TIME_PER_ACTION:
                 self.state_start_time = get_time()
                 self.state = 'Idle'
+                self.last_attack_time = get_time()
         elif self.state == 'Hurt':
             if get_time() - self.state_start_time > TIME_PER_ACTION:
                 self.state_start_time = get_time()
@@ -139,13 +143,13 @@ class Boss:
             return BehaviorTree.FAIL
 
     def is_player_left(self):
-        if common.player.x < self.x:
+        if common.player.x > self.x:
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
     def is_player_right(self):
-        if common.player.x > self.x:
+        if common.player.x < self.x:
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
@@ -175,6 +179,12 @@ class Boss:
         self.state_start_time = get_time()
         return BehaviorTree.SUCCESS
 
+    def is_attack_ready(self):
+        if get_time() - self.last_attack_time > self.attack_cooldown:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+
     def build_behavior_tree(self):
         # 조건 노드
         is_player_near = Condition('플레이어가 가까이 있는가?', self.is_player_near)
@@ -185,6 +195,7 @@ class Boss:
         is_player_right = Condition('플레이어가 오른쪽에 있는가?', self.is_player_right)
         is_attack_all_hand = Condition('양손 공격 할 건가?', self.is_attack_all_hand)
         is_what_attack = Condition('양손 공격 중 어떤 공격을 할 건가?', self.is_what_attack)
+        is_attack_ready = Condition('공격 준비가 되었는가?', self.is_attack_ready)
 
         # 대기 행동
         action_default = Action('대기', self.set_state_idle)
@@ -197,17 +208,17 @@ class Boss:
         smash_ground_right = Action('오른손 땅 내려찍기 공격', self.set_attack_state, 'Attack3')
 
         # 공격 시퀀스 노드
-        attack1 = Sequence('왼쪽에 가까이 있다면 왼쪽 쓸어오기', is_player_near, is_player_left, sweep_left)
-        attack2 = Sequence('왼쪽에 있지만 멀다면 왼쪽 내려찍기', is_player_far, is_player_left, smash_ground_left)
-        attack3 = Sequence('오른쪽에 가까이 있다면 오른쪽 쓸어오기', is_player_near, is_player_right, sweep_right)
-        attack4 = Sequence('오른쪽에 있지만 멀다면 오른쪽 내려찍기', is_player_far, is_player_right, smash_ground_right)
+        attack1 = Sequence('왼쪽에 가까이 있다면 왼쪽 쓸어오기', is_attack_ready, is_player_near, is_player_left, sweep_left)
+        attack2 = Sequence('왼쪽에 있지만 멀다면 왼쪽 내려찍기', is_attack_ready, is_player_far, is_player_left, smash_ground_left)
+        attack3 = Sequence('오른쪽에 가까이 있다면 오른쪽 쓸어오기', is_attack_ready, is_player_near, is_player_right, sweep_right)
+        attack4 = Sequence('오른쪽에 있지만 멀다면 오른쪽 내려찍기', is_attack_ready, is_player_far, is_player_right, smash_ground_right)
         attack5 = Sequence('양손 쓸어오기 공격', sweep_all)
         attack6 = Sequence('양손 땅 내려찍기 공격', smash_ground_all)
 
-        # 양손 공격이라면 뭘로 공격할지 선택
+        # 양손 공격이라면 뭘로 공���할지 선택
         all_attack_sweep = Sequence('양손 쓸어오기 선택하기', is_what_attack, attack5)
         choice_all_attack = Selector('양손 공격 선택하기', all_attack_sweep, attack6)
-        all_hand_attack = Sequence('양손 공격', is_attack_all_hand, choice_all_attack)
+        all_hand_attack = Sequence('양손 공격', is_attack_ready, is_attack_all_hand, choice_all_attack)
 
         # 무슨 공격할지
         choice_attack = Selector('어떤 공격을 할 것인가?', all_hand_attack, attack1, attack2, attack3, attack4, action_default)
