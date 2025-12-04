@@ -96,7 +96,7 @@ class Boss:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - 320, self.y - 512, self.x + 320, self.y
+        return self.x - 150, self.y - 512, self.x + 150, self.y
 
     def handle_event(self, event):
         pass
