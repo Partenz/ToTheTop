@@ -47,7 +47,6 @@ class Boss:
         self.x , self.y =  x, y
         self.tx = None
         self.frame = 0
-        self.dir = 0 # 0 정지 1 오른쪽 -1 왼쪽
         self.size = 1024
         self.state = 'Appearance'
         self.state_start_time = get_time()
@@ -124,6 +123,33 @@ class Boss:
                     self.on_tile = True
                     self.y += top_tile - bottom_enemy
                     self.y_velocity = 0
+
+    def is_player_near(self):
+        pass
+
+    def is_player_far(self):
+        pass
+
+    def is_player_left(self):
+        pass
+
+    def is_player_right(self):
+        pass
+
+    def is_attack_all_hand(self):
+        pass
+
+    def is_what_attack(self):
+        pass
+
+    def set_state_idle(self):
+        self.state = 'Idle'
+        return BehaviorTree.SUCCESS
+
+    def set_attack_state(self, attack_type):
+        self.state = attack_type
+        self.state_start_time = get_time()
+        return BehaviorTree.SUCCESS
 
     def build_behavior_tree(self):
         # 조건 노드
