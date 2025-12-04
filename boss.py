@@ -52,12 +52,12 @@ class Boss:
         self.state = 'Appearance'
         self.state_start_time = get_time()
 
-        #self.build_behavior_tree()
+        self.build_behavior_tree()
 
     def update(self):
-        #elf.on_tile = False
-        #if self.state != 'Hurt' and self.state != 'Death' and self.state != 'Attack':
-         #   self.bt.run()
+        self.on_tile = False
+        if self.state != 'Hurt' and self.state != 'Death' and self.state != 'Attack':
+            self.bt.run()
 
         # 타일 위에 있지 않으면 추락
         if not self.on_tile:
@@ -126,5 +126,41 @@ class Boss:
                     self.y_velocity = 0
 
     def build_behavior_tree(self):
-        root = None
+        # 조건 노드
+        is_player_near = Condition('플레이어가 가까이 있는가?', self.is_player_near)
+        # is_player_near의 반대 조건
+        is_player_far = Condition('플레이어가 멀리 있는가?', self.is_player_far)
+        is_player_left = Condition('플레이어가 왼쪽에 있는가?', self.is_player_left)
+        # is_player_left의 반대 조건
+        is_player_right = Condition('플레이어가 오른쪽에 있는가?', self.is_player_right)
+        is_attack_all_hand = Condition('양손 공격 할 건가?', self.is_attack_all_hand)
+        is_what_attack = Condition('양손 공격 중 어떤 공격을 할 건가?', self.is_what_attack)
+
+        # 대기 행동
+        action_default = Action('대기', self.set_state_idle)
+        # 공격 행동
+        sweep_left = Action('왼쪽 쓸어오기 공격', self.set_attack_state, 'Attack5')
+        sweep_right = Action('오른쪽 쓸어오기 공격', self.set_attack_state, 'Attack6')
+        sweep_all = Action('양손 쓸어오기 공격', self.set_attack_state, 'Attack4')
+        smash_ground_all = Action('양손 땅 내려찍기 공격', self.set_attack_state, 'Attack1')
+        smash_ground_left = Action('왼손 땅 내려찍기 공격', self.set_attack_state, 'Attack2')
+        smash_ground_right = Action('오른손 땅 내려찍기 공격', self.set_attack_state, 'Attack3')
+
+        # 공격 시퀀스 노드
+        attack1 = Sequence('왼쪽에 가까이 있다면 왼쪽 쓸어오기', is_player_near, is_player_left, sweep_left)
+        attack2 = Sequence('왼쪽에 있지만 멀다면 왼쪽 내려찍기', is_player_far, is_player_left, smash_ground_left)
+        attack3 = Sequence('오른쪽에 가까이 있다면 오른쪽 쓸어오기', is_player_near, is_player_right, sweep_right)
+        attack4 = Sequence('오른쪽에 있지만 멀다면 오른쪽 내려찍기', is_player_far, is_player_right, smash_ground_right)
+        attack5 = Sequence('양손 쓸어오기 공격', sweep_all)
+        attack6 = Sequence('양손 땅 내려찍기 공격', smash_ground_all)
+
+        # 양손 공격이라면 뭘로 공격할지 선택
+        all_attack_sweep = Sequence('양손 쓸어오기 선택하기', is_what_attack, attack5)
+        choice_all_attack = Selector('양손 공격 선택하기', all_attack_sweep, attack6)
+        all_hand_attack = Sequence('양손 공격', is_attack_all_hand, choice_all_attack)
+
+        # 무슨 공격할지
+        choice_attack = Selector('어떤 공격을 할 것인가?', all_hand_attack, attack1, attack2, attack3, attack4, action_default)
+
+        root = choice_attack
         self.bt = BehaviorTree(root)
