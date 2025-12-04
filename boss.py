@@ -125,16 +125,30 @@ class Boss:
                     self.y_velocity = 0
 
     def is_player_near(self):
-        pass
+        distance = abs(common.player.x - self.x)
+        if distance < 100:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
 
     def is_player_far(self):
-        pass
+        distance = abs(common.player.x - self.x)
+        if distance >= 100:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
 
     def is_player_left(self):
-        pass
+        if common.player.x < self.x:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
 
     def is_player_right(self):
-        pass
+        if common.player.x > self.x:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
 
     def is_attack_all_hand(self):
         ran_choice = random.choice([True, False])
