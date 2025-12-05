@@ -155,7 +155,7 @@ class Hurt:
     def enter(self, event):
         self.player.frame = 0
         self.animation_start_time = get_time()
-        damage = max(1, 10 - self.player.stat.defense) # 최소 1의 데미지
+        damage = max(1, 25 - self.player.stat.defense) # 최소 1의 데미지 ~ 최대 20의 데미지
         self.player.hp -= damage
         self.player.x -= self.player.face_dir * RUN_SPEED_PPS / 5  # 피격 시 약간 밀려남
 
