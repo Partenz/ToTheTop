@@ -48,7 +48,16 @@ class BossAttack:
         self.y = Attack[self.which_hand][self.which_attack][int(self.frame)][1]
 
     def get_bb(self):
-        return self.x - 50, self.y - 50, self.x + 50, self.y + 50
+        if int(self.frame) == 4 or int(self.frame) == 5:
+            if self.which_attack == 'smash':
+                return self.x - 50, self.y - 500, self.x + 50, self.y + 50
+            elif self.which_attack == 'sweep':
+                if self.which_hand == 'left':
+                    return self.x - 50, self.y - 50, self.x + 500, self.y + 50
+                elif self.which_hand == 'right':
+                    return self.x - 500, self.y - 50, self.x + 50, self.y + 50
+        else:
+            return self.x - 50, self.y - 50, self.x + 50, self.y + 50
 
     def draw(self):
         # 디버깅용으로 바운딩 박스 그리기
