@@ -258,7 +258,10 @@ class Player:
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
-        self.hp_image.draw(100, 700, 200, 40)
+        hp_ratio = self.hp / self.stat.max_hp
+        hp_bar_width = max(0, 500 * hp_ratio)
+        hp_bar_x = 50 + hp_bar_width / 2
+        self.hp_image.draw(hp_bar_x, 700, hp_bar_width, 40)
 
     def get_bb(self):
         return self.x - 32, self.y - 50, self.x + 32, self.y + 64
