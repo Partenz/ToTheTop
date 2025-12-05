@@ -6,6 +6,7 @@ import game_world
 import stage1_mode
 from Weapon import Weapon
 from state_machine import StateMachine
+from stat import Stat
 
 PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 20 cm
 RUN_SPEED_KMPH = 10.0
@@ -154,7 +155,8 @@ class Hurt:
     def enter(self, event):
         self.player.frame = 0
         self.animation_start_time = get_time()
-        self.player.hp -= 5
+        damage = max(1, 10 - self.player.stat.defense) # 최소 1의 데미지
+        self.player.hp -= damage
         self.player.x -= self.player.face_dir * RUN_SPEED_PPS / 5  # 피격 시 약간 밀려남
 
     def exit(self, event):
@@ -208,8 +210,9 @@ class Death:
 
 
 class Player:
-    def __init__(self, x = 50, y = 128, hp = 100):
-        self.hp = hp
+    def __init__(self, x = 50, y = 128):
+        self.stat = Stat()
+        self.hp = self.stat.max_hp
 
         self.x , self.y =  x, y
         self.frame = 0
