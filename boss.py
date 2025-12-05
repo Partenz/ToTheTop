@@ -15,27 +15,40 @@ RUN_SPEED_MPM = (RUN_SPEED_KMPH * 1000.0 / 60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM / 60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS * PIXEL_PER_METER)
 
-TIME_PER_ACTION = 1.0
+TIME_PER_ACTION = 2.0
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = {'Appearance': 8,'Idle': 8, 'Hurt' : 4, 'Death' : 6, 'Attack1' : 6, 'Attack2' : 6, 'Attack3' : 6, 'Attack4' : 6, 'Attack5' : 6, 'Attack6' : 6}
 
 GRAVITY = 9.8  # 중력 가속도 (m/s²)
 GRAVITY_PPS = GRAVITY * PIXEL_PER_METER  # 중력을 픽셀 단위로 변환
 
+Attack = {
+    'left': {'sweep': [(1220, 140), (1400, 140), (1400, 140), (1400, 140), (1000, 140), (1000, 140)],
+             'smash': [(1220, 140), (1220, 250), (1220, 500), (1220, 500), (1220, 500), (1220, 140)]},
+    'right': {'sweep': [(780, 140), (560, 140), (560, 140), (560, 140), (1000, 140), (1000, 140)],
+              'smash': [(780, 140), (780, 250), (780, 500), (780, 500), (780, 500), (780, 500)]}
+}
+
 class BossAttack:
-    def __init__(self):
+    def __init__(self, which_hand, which_attack):
         self.creation_time = get_time()
-        self.x = None
-        self.y = None
+        self.which_hand = which_hand
+        self.which_attack = which_attack
+        self.frame = 0
+        self.x = Attack[which_hand][which_attack][0][0]
+        self.y = Attack[which_hand][which_attack][0][1]
 
     def update(self):
-        # 일정 시간 후 자동 소멸
-        if get_time() - self.creation_time > 0.5: # 예: 0.5초
+        if self.frame >= 5:
             game_world.remove_object(self)
+            return
+
+        self.frame = self.frame + 6 * ACTION_PER_TIME * game_framework.frame_time
+        self.x = Attack[self.which_hand][self.which_attack][int(self.frame)][0]
+        self.y = Attack[self.which_hand][self.which_attack][int(self.frame)][1]
 
     def get_bb(self):
-        # 무기의 바운딩 박스 반환
-        return self.x - 34, self.y - 50, self.x + 34, self.y + 25
+        return self.x - 50, self.y - 50, self.x + 50, self.y + 50
 
     def draw(self):
         # 디버깅용으로 바운딩 박스 그리기
@@ -44,7 +57,7 @@ class BossAttack:
     def handle_collision(self, group, other):
         if group == 'bossAttack:player':
             pass
-        elif group == 'bossAttack:weapon'
+        elif group == 'bossAttack:weapon':
             pass
 
 class Boss:
@@ -121,7 +134,7 @@ class Boss:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x - 150, self.y - 512, self.x + 150, self.y
+        return self.x - 270, self.y - 512, self.x + 270, self.y
 
     def handle_event(self, event):
         pass
@@ -154,14 +167,14 @@ class Boss:
 
     def is_player_near(self):
         distance = abs(common.player.x - self.x)
-        if distance < 100:
+        if distance < 200:
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
 
     def is_player_far(self):
         distance = abs(common.player.x - self.x)
-        if distance >= 100:
+        if distance >= 200:
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
@@ -202,6 +215,44 @@ class Boss:
         self.state = attack_type
         self.frame = 0
         self.state_start_time = get_time()
+        if attack_type == 'Attack1':
+            boss_hand_left = BossAttack('left', 'smash')
+            boss_hand_right = BossAttack('right', 'smash')
+            game_world.add_object(boss_hand_left, 3)
+            game_world.add_object(boss_hand_right, 3)
+            game_world.add_collision_pair('bossAttack:player', boss_hand_left, None)
+            game_world.add_collision_pair('bossAttack:weapon', boss_hand_left, None)
+            game_world.add_collision_pair('bossAttack:player', boss_hand_right, None)
+            game_world.add_collision_pair('bossAttack:weapon', boss_hand_right, None)
+        elif attack_type == 'Attack2':
+            boss_hand = BossAttack('left', 'smash')
+            game_world.add_object(boss_hand, 3)
+            game_world.add_collision_pair('bossAttack:player', boss_hand, None)
+            game_world.add_collision_pair('bossAttack:weapon', boss_hand, None)
+        elif attack_type == 'Attack3':
+            boss_hand = BossAttack('right', 'smash')
+            game_world.add_object(boss_hand, 3)
+            game_world.add_collision_pair('bossAttack:player', boss_hand, None)
+            game_world.add_collision_pair('bossAttack:weapon', boss_hand, None)
+        elif attack_type == 'Attack4':
+            boss_hand_left = BossAttack('left', 'sweep')
+            boss_hand_right = BossAttack('right', 'sweep')
+            game_world.add_object(boss_hand_left, 3)
+            game_world.add_object(boss_hand_right, 3)
+            game_world.add_collision_pair('bossAttack:player', boss_hand_left, None)
+            game_world.add_collision_pair('bossAttack:weapon', boss_hand_left, None)
+            game_world.add_collision_pair('bossAttack:player', boss_hand_right, None)
+            game_world.add_collision_pair('bossAttack:weapon', boss_hand_right, None)
+        elif attack_type == 'Attack5':
+            boss_hand = BossAttack('left', 'sweep')
+            game_world.add_object(boss_hand, 3)
+            game_world.add_collision_pair('bossAttack:player', boss_hand, None)
+            game_world.add_collision_pair('bossAttack:weapon', boss_hand, None)
+        elif attack_type == 'Attack6':
+            boss_hand = BossAttack('right', 'sweep')
+            game_world.add_object(boss_hand, 3)
+            game_world.add_collision_pair('bossAttack:player', boss_hand, None)
+            game_world.add_collision_pair('bossAttack:weapon', boss_hand, None)
         return BehaviorTree.SUCCESS
 
     def is_attack_ready(self):
