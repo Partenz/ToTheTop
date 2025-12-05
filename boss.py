@@ -153,7 +153,7 @@ class Boss:
             pass
         elif group == 'boss:weapon':
             if not self.if_hurt and not self.state == 'Death':
-                self.hp -= common.player.stat.attack()
+                self.hp -= common.player.stat.attack
                 self.if_hurt = True
                 self.frame = 0
                 self.state = 'Hurt'

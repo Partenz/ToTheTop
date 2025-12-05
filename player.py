@@ -6,7 +6,7 @@ import game_world
 import stage1_mode
 from Weapon import Weapon
 from state_machine import StateMachine
-from stat import Stat
+from stats import Stat
 
 PIXEL_PER_METER = (10.0 / 0.2)  # 10 pixel 20 cm
 RUN_SPEED_KMPH = 10.0
@@ -230,6 +230,7 @@ class Player:
         self.image['Attack'] = load_image('./resources/player/Player_Attack.png')
         self.image['Hurt'] = load_image('./resources/player/Player_Hurt.png')
         self.image['Death'] = load_image('./resources/player/Player_Death.png')
+        self.hp_image = load_image('./resources/gui/hp.png')
 
         self.IDLE = Idle(self)
         self.RUN = Run(self)
@@ -257,6 +258,7 @@ class Player:
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
+        self.hp_image.draw(100, 700, 200, 40)
 
     def get_bb(self):
         return self.x - 32, self.y - 50, self.x + 32, self.y + 64

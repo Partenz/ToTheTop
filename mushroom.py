@@ -104,7 +104,7 @@ class Mushroom:
             pass
         elif group == 'enemy:weapon':
             if not self.if_hurt and not self.state == 'Death':
-                self.hp -= common.player.stat.attack()
+                self.hp -= common.player.stat.attack
                 self.if_hurt = True
                 self.frame = 0
                 self.dir = 0  # 멈춤
