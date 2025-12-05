@@ -102,30 +102,29 @@ class Boss:
         pass
 
     def handle_collision(self, group, other):
-        if group == 'player:enemy':
+        if group == 'player:boss':
             pass
-        elif group == 'enemy:weapon':
+        elif group == 'boss:weapon':
             if not self.if_hurt and not self.state == 'Death':
                 self.hp -= 10
                 self.if_hurt = True
                 self.frame = 0
-                self.dir = 0  # 멈춤
                 self.state = 'Hurt'
                 self.state_start_time = get_time()
             if self.hp <= 0:
                 # 죽음 상태로 전환
                 self.state = 'Death'
                 self.if_hurt = False
-        elif group == 'enemy:tile':
-            left_enemy, bottom_enemy, right_enemy, top_enemy = self.get_bb()
+        elif group == 'boss:tile':
+            left_boss, bottom_boss, right_boss, top_boss = self.get_bb()
             left_tile, bottom_tile, right_tile, top_tile = other.get_bb()
 
             #  아래로 떨어지고 있고, 발이 타일 상단 근처에 있을 때
-            if self.y_velocity <= 0 and abs(bottom_enemy - top_tile) < 10: # 10은 약간의 오차 허용 범위
+            if self.y_velocity <= 0 and abs(bottom_boss - top_tile) < 10: # 10은 약간의 오차 허용 범위
                 #  타일의 좌우 범위 내에 있는지 확인
-                if right_enemy > left_tile and left_enemy < right_tile:
+                if right_boss > left_tile and left_boss < right_tile:
                     self.on_tile = True
-                    self.y += top_tile - bottom_enemy
+                    self.y += top_tile - bottom_boss
                     self.y_velocity = 0
 
     def is_player_near(self):
@@ -176,6 +175,7 @@ class Boss:
 
     def set_attack_state(self, attack_type):
         self.state = attack_type
+        self.frame = 0
         self.state_start_time = get_time()
         return BehaviorTree.SUCCESS
 

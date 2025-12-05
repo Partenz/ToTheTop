@@ -102,6 +102,7 @@ class Attack:
         weapon = Weapon(self.player)
         game_world.add_object(weapon, 3)
         game_world.add_collision_pair('enemy:weapon', None, weapon)
+        game_world.add_collision_pair('boss:weapon', None, weapon)
 
     def exit(self, event):
         pass

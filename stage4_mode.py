@@ -57,6 +57,7 @@ def init():
     for tile in tiles:
         game_world.add_collision_pair('player:tile', None, tile)
         game_world.add_collision_pair('enemy:tile', None, tile)
+        game_world.add_collision_pair('boss:tile', None, tile)
 
     portal_left = Portal(-100, 150)
     game_world.add_object(portal_left, 1)
@@ -66,9 +67,9 @@ def init():
 
     boss = Boss(1000, 600)
     game_world.add_object(boss, 2)
-    game_world.add_collision_pair('player:enemy', None, boss)
-    game_world.add_collision_pair('enemy:weapon', boss, None)
-    game_world.add_collision_pair('enemy:tile', boss, None)
+    game_world.add_collision_pair('player:boss', None, boss)
+    game_world.add_collision_pair('boss:weapon', boss, None)
+    game_world.add_collision_pair('boss:tile', boss, None)
 
 def update():
     game_world.update()
