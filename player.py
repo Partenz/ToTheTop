@@ -238,8 +238,8 @@ class Player:
         self.state_machine = StateMachine(self.IDLE, {
             self.IDLE: {left_down: self.RUN, right_down: self.RUN, space_down: self.JUMP, a_down: self.ATTACK, hurt:self.HURT},
             self.RUN: {left_down: self.IDLE, right_down: self.IDLE, left_up: self.IDLE, right_up: self.IDLE, space_down: self.JUMP, a_down: self.ATTACK, hurt:self.HURT},
-            self.ATTACK: {time_out: self.IDLE},
-            self.JUMP: {jump_end: self.IDLE},
+            self.ATTACK: {time_out: self.IDLE, hurt:self.HURT},
+            self.JUMP: {jump_end: self.IDLE, hurt:self.HURT},
             self.HURT: {time_out: self.IDLE, death: self.DEATH},
             self.DEATH: {time_out: self.IDLE}
         })
@@ -273,6 +273,8 @@ class Player:
                     if self.state_machine.cur_state == self.JUMP:
                         self.state_machine.handle_state_event(('JUMP_END', None))
         elif group == 'player:enemy':
+            self.state_machine.handle_state_event(('HURT', None))
+        elif group == 'bossAttack:player':
             self.state_machine.handle_state_event(('HURT', None))
 
 
