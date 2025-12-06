@@ -4,6 +4,7 @@ from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_SPACE, SDLK
 import common
 import game_framework
 import game_world
+import shop_mode
 import stage1_mode
 from Weapon import Weapon
 from state_machine import StateMachine
@@ -260,9 +261,11 @@ class Player:
             # 포션 상인과 상호작용
             if game_world.collide(self, common.trader_drink):
                 print('포션 상인과 상호작용')
+                game_framework.push_mode(shop_mode)
             # 무기 상인과 상호작용
             elif game_world.collide(self, common.trader_weapon):
                 print('무기 상인과 상호작용')
+                game_framework.push_mode(shop_mode)
 
         self.state_machine.handle_state_event(('INPUT', event))
 
