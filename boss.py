@@ -158,10 +158,11 @@ class Boss:
                 self.frame = 0
                 self.state = 'Hurt'
                 self.state_start_time = get_time()
-            if self.hp <= 0:
-                # 죽음 상태로 전환
-                self.state = 'Death'
-                self.if_hurt = False
+                if self.hp <= 0:
+                    # 죽음 상태로 전환
+                    self.state = 'Death'
+                    self.if_hurt = False
+                    common.player.coin += 100
         elif group == 'boss:tile':
             left_boss, bottom_boss, right_boss, top_boss = self.get_bb()
             left_tile, bottom_tile, right_tile, top_tile = other.get_bb()

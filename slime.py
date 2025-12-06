@@ -110,10 +110,11 @@ class Slime:
                 self.dir = 0  # 멈춤
                 self.state = 'Hurt'
                 self.state_start_time = get_time()
-            if self.hp <= 0:
-                # 죽음 상태로 전환
-                self.state = 'Death'
-                self.if_hurt = False
+                if self.hp <= 0:
+                  # 죽음 상태로 전환
+                    self.state = 'Death'
+                    self.if_hurt = False
+                    common.player.coin += 5
         elif group == 'enemy:tile':
             left_enemy, bottom_enemy, right_enemy, top_enemy = self.get_bb()
             left_tile, bottom_tile, right_tile, top_tile = other.get_bb()
