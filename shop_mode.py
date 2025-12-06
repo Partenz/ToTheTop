@@ -9,7 +9,8 @@ font = None
 shop_category = None
 weapon_image = []
 weapon_price = [50, 100, 100, 100]  # Sword1, Sword2, Helmet, Armor
-
+drink_image = None
+drink_price = 10  # Health Potion
 # 각 'BUY' 버튼의 사각형 영역 정의 (x1, y1, x2, y2)
 buy_buttons = {
     'weapon': [
@@ -17,6 +18,9 @@ buy_buttons = {
         (915, 420, 985, 450),  # Sword 2
         (1055, 420, 1125, 450), # Helmet
         (785, 230, 855, 260)   # Armor
+    ],
+    'drink': [
+        (790, 420, 860, 450)   # Health Potion]
     ]
 }
 
@@ -57,9 +61,16 @@ def handle_events():
                             print(f'무기/방어구 {i + 1} 구매 완료! 남은 코인: {common.player.coin}')
                             print(f'현재 공격력 : {common.player.stat.attack}, 현재 방어력: {common.player.stat.defense}')
                         break
+            elif shop_category == 'drink':
+                for button_rect in buy_buttons['drink']:
+                    if is_point_in_rect(event.x, get_canvas_height() - 1 - event.y, button_rect):
+                        if common.player.coin >= drink_price:
+                            common.player.coin -= drink_price
+                            common.player.health_potion += 1
+                            print(f'체력 물약 구매 완료! 남은 코인: {common.player.coin}, 현재 체력 물약 개수: {common.player.health_potion}')
 
 def init():
-    global shop_image, font, shop_category, weapon_image
+    global shop_image, font, shop_category, weapon_image, drink_image
     if shop_image is None:
         shop_image = {}
         shop_image['drink'] = load_image('./resources/gui/shop_drink.png')
@@ -71,6 +82,8 @@ def init():
         weapon_image.append(load_image('./resources/gui/sword2.png'))
         weapon_image.append(load_image('./resources/gui/helmet.png'))
         weapon_image.append(load_image('./resources/gui/armor.png'))
+    if drink_image is None:
+        drink_image = load_image('./resources/gui/healthPotion.png')
 
     # 어떤 상점과 상호작용했는지 확인
     if game_world.collide(common.player, common.trader_drink):
@@ -102,6 +115,9 @@ def draw():
             font.draw(920, 470, '100', (0, 0, 0))
             font.draw(1060, 470, '100', (0, 0, 0))
             font.draw(790, 280, '100', (0, 0, 0))
+        elif shop_category == 'drink':
+            drink_image.draw(825, 520, 80, 80)
+            font.draw(790, 470, '10', (0, 0, 0))
     update_canvas()
 
 

@@ -216,6 +216,7 @@ class Player:
         self.stat = Stat()
         self.hp = self.stat.max_hp
         self.coin = 0
+        self.health_potion = 0
 
         self.x , self.y =  x, y
         self.frame = 0
@@ -278,7 +279,7 @@ class Player:
         hp_bar_width = max(0, 500 * hp_ratio)
         hp_bar_x = 50 + hp_bar_width / 2
         self.hp_image.draw(hp_bar_x, 700, hp_bar_width, 40)
-        self.font.draw(1500, 700, f'Coin : {self.coin}', (255, 255, 0))
+        self.font.draw(1400, 700, f'Coin : {self.coin}, Potion : {self.health_potion}', (255, 255, 0))
 
     def get_bb(self):
         return self.x - 32, self.y - 50, self.x + 32, self.y + 64
