@@ -58,13 +58,13 @@ def init():
     portal = Portal(1950, 150)
     game_world.add_object(portal, 1)
 
-    trader_drink = TraderDrink()
-    game_world.add_object(trader_drink, 2)
-    game_world.add_collision_pair('traderDrink:player', trader_drink, None)
+    common.trader_drink = TraderDrink()
+    game_world.add_object(common.trader_drink, 2)
+    game_world.add_collision_pair('traderDrink:player', common.trader_drink, None)
 
-    trader_weapon = TraderWeapon()
-    game_world.add_object(trader_weapon, 2)
-    game_world.add_collision_pair('traderDrink:player', trader_weapon, None)
+    common.trader_weapon = TraderWeapon()
+    game_world.add_object(common.trader_weapon, 2)
+    game_world.add_collision_pair('traderDrink:player', common.trader_weapon, None)
 
 
 

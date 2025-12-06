@@ -1,6 +1,7 @@
 from pico2d import load_image, get_time, draw_rectangle, load_font
-from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_SPACE, SDLK_a
+from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_SPACE, SDLK_a, SDLK_e
 
+import common
 import game_framework
 import game_world
 import stage1_mode
@@ -255,6 +256,14 @@ class Player:
         self.state_machine.update()
 
     def handle_event(self, event):
+        if event.type == SDL_KEYDOWN and event.key == SDLK_e:
+            # 포션 상인과 상호작용
+            if game_world.collide(self, common.trader_drink):
+                print('포션 상인과 상호작용')
+            # 무기 상인과 상호작용
+            elif game_world.collide(self, common.trader_weapon):
+                print('무기 상인과 상호작용')
+
         self.state_machine.handle_state_event(('INPUT', event))
 
     def draw(self):
