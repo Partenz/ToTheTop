@@ -1,5 +1,5 @@
 from pico2d import load_image, get_time, draw_rectangle, load_font
-from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_SPACE, SDLK_a, SDLK_e, SDLK_PLUS, SDLK_p
+from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_SPACE, SDLK_a, SDLK_e, SDLK_PLUS, SDLK_p, SDLK_h
 
 import common
 import game_framework
@@ -215,7 +215,7 @@ class Player:
     def __init__(self, x = 50, y = 128):
         self.stat = Stat()
         self.hp = self.stat.max_hp
-        self.coin = 0
+        self.coin = 50
         self.health_potion = 0
 
         self.x , self.y =  x, y
@@ -269,6 +269,8 @@ class Player:
                 game_framework.push_mode(shop_mode)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_p:
             self.coin += 50
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_h:
+            self.hp = self.stat.max_hp
 
         self.state_machine.handle_state_event(('INPUT', event))
 
