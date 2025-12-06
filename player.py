@@ -1,5 +1,5 @@
 from pico2d import load_image, get_time, draw_rectangle, load_font
-from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_SPACE, SDLK_a, SDLK_e
+from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_SPACE, SDLK_a, SDLK_e, SDLK_PLUS, SDLK_p
 
 import common
 import game_framework
@@ -266,6 +266,8 @@ class Player:
             elif game_world.collide(self, common.trader_weapon):
                 print('무기 상인과 상호작용')
                 game_framework.push_mode(shop_mode)
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_p:
+            self.coin += 50
 
         self.state_machine.handle_state_event(('INPUT', event))
 

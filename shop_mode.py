@@ -8,6 +8,22 @@ shop_image = None
 font = None
 shop_category = None
 weapon_image = []
+weapon_price = [50, 100, 100, 100]  # Sword1, Sword2, Helmet, Armor
+
+# 각 'BUY' 버튼의 사각형 영역 정의 (x1, y1, x2, y2)
+buy_buttons = {
+    'weapon': [
+        (790, 420, 860, 450),  # Sword 1
+        (915, 420, 985, 450),  # Sword 2
+        (1055, 420, 1125, 450), # Helmet
+        (785, 230, 855, 260)   # Armor
+    ]
+}
+
+def is_point_in_rect(x, y, rect):
+    x1, y1, x2, y2 = rect
+    return x1 <= x <= x2 and y1 <= y <= y2
+
 
 def handle_events():
     event_list = get_events()
@@ -17,6 +33,30 @@ def handle_events():
         elif (event.type, event.key) == (SDL_KEYDOWN, SDLK_ESCAPE) or \
              (event.type, event.key) == (SDL_KEYDOWN, SDLK_e):
             game_framework.pop_mode()
+        # 마우스 왼쪽 버튼 클릭 이벤트 처리
+        elif event.type == SDL_MOUSEBUTTONDOWN and event.button == SDL_BUTTON_LEFT:
+            # weapon 상점일 경우
+            if shop_category == 'weapon':
+                # weapon 상점의 각 버튼 확인
+                for i, button_rect in enumerate(buy_buttons['weapon']):
+                    # 마우스 클릭 위치가 버튼 영역 안에 있는지 확인
+                    # pico2d의 y좌표는 위로 갈수록 증가하므로 변환 필요
+                    if is_point_in_rect(event.x, get_canvas_height() - 1 - event.y, button_rect):
+                        print(f'무기/방어구 {i + 1} 구매 시도')
+                        # 여기에 실제 구매 로직을 추가합니다.
+                        if common.player.coin >= weapon_price[i]:
+                            common.player.coin -= weapon_price[i]
+                            if i  == 0:
+                                common.player.stat.bonus_attack += 15
+                            elif i == 1:
+                                common.player.stat.bonus_attack += 45
+                            elif i == 2:
+                                common.player.stat.bonus_defense += 10
+                            elif i == 3:
+                                common.player.stat.bonus_defense += 10
+                            print(f'무기/방어구 {i + 1} 구매 완료! 남은 코인: {common.player.coin}')
+                            print(f'현재 공격력 : {common.player.stat.attack}, 현재 방어력: {common.player.stat.defense}')
+                        break
 
 def init():
     global shop_image, font, shop_category, weapon_image
@@ -58,6 +98,10 @@ def draw():
             weapon_image[1].draw(950, 520, 80, 80)
             weapon_image[2].draw(1090, 520, 80, 80)
             weapon_image[3].draw(820, 330, 80, 80)
+            font.draw(790, 470, '50', (0, 0, 0))
+            font.draw(920, 470, '100', (0, 0, 0))
+            font.draw(1060, 470, '100', (0, 0, 0))
+            font.draw(790, 280, '100', (0, 0, 0))
     update_canvas()
 
 
