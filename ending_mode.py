@@ -1,7 +1,6 @@
 import random
 from pico2d import *
 
-import ending_mode
 import game_framework
 import game_world
 import stage1_mode
@@ -45,7 +44,7 @@ def init():
 
 
     # 스테이지 이동에 따른 플레이어 위치 조정
-    if game_world.stage_from == 'stage3':
+    if game_world.stage_from == 'stage4':
         common.player.x, common.player.y = 50, 128
     else:
         common.player.x, common.player.y = 1800, 128
@@ -68,13 +67,6 @@ def init():
     portal_right = Portal(1950, 150)
     game_world.add_object(portal_right, 1)
 
-    if not common.boss_clear:
-        boss = Boss(1000, 600)
-        game_world.add_object(boss, 2)
-        game_world.add_collision_pair('player:boss', None, boss)
-        game_world.add_collision_pair('boss:weapon', boss, None)
-        game_world.add_collision_pair('boss:tile', boss, None)
-
 def update():
     game_world.update()
     game_world.handle_collisions() # handle_collisions 호출
@@ -83,15 +75,15 @@ def update():
 
     if game_world.collide(common.player, portal_left):
         print("이전 스테이지로 이동")
-        game_world.stage = 'stage3'
-        game_world.stage_from = 'stage4'
+        game_world.stage = 'stage4'
+        game_world.stage_from = 'ending'
         game_framework.change_mode(stage3_mode)
 
     if game_world.collide(common.player, portal_right) and common.boss_clear:
         print("다음 스테이지로 이동")
-        game_world.stage = 'ending'
-        game_world.stage_from = 'stage4'
-        game_framework.change_mode(ending_mode)
+        game_world.stage = 'stage1'
+        game_world.stage_from = 'ending'
+        game_framework.change_mode(title_mode)
 
 
 def draw():

@@ -307,7 +307,7 @@ class Player:
             left_tile, bottom_tile, right_tile, top_tile = other.get_bb()
 
             # 플레이어가 아래로 떨어지고 있고, 발이 타일 상단 근처에 있을 때
-            if self.y_velocity <= 0 and abs(bottom_player - top_tile) < 10: # 10은 약간의 오차 허용 범위
+            if self.y_velocity <= 0 and abs(bottom_player - top_tile) < 20: # 20은 약간의 오차 허용 범위
                 # 플레이어가 타일의 좌우 범위 내에 있는지 확인
                 if right_player > left_tile and left_player < right_tile:
                     self.on_tile = True

@@ -130,6 +130,7 @@ class Boss:
                 self.if_hurt = False
         elif self.state == 'Death':
             if get_time() - self.state_start_time > TIME_PER_ACTION:
+                common.boss_clear = True
                 # 죽음 애니메이션이 끝난 후 객체 제거
                 game_world.remove_object(self)
                 return
@@ -168,7 +169,7 @@ class Boss:
             left_tile, bottom_tile, right_tile, top_tile = other.get_bb()
 
             #  아래로 떨어지고 있고, 발이 타일 상단 근처에 있을 때
-            if self.y_velocity <= 0 and abs(bottom_boss - top_tile) < 10: # 10은 약간의 오차 허용 범위
+            if self.y_velocity <= 0 and abs(bottom_boss - top_tile) < 20: # 20은 약간의 오차 허용 범위
                 #  타일의 좌우 범위 내에 있는지 확인
                 if right_boss > left_tile and left_boss < right_tile:
                     self.on_tile = True
