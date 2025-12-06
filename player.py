@@ -1,5 +1,5 @@
 from pico2d import load_image, get_time, draw_rectangle, load_font
-from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_SPACE, SDLK_a, SDLK_e, SDLK_PLUS, SDLK_p, SDLK_h
+from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_SPACE, SDLK_a, SDLK_e, SDLK_p, SDLK_h
 
 import common
 import game_framework
@@ -160,6 +160,8 @@ class Hurt:
         damage = max(1, 25 - self.player.stat.defense) # 최소 1의 데미지 ~ 최대 20의 데미지
         self.player.hp -= damage
         self.player.x -= self.player.face_dir * RUN_SPEED_PPS / 5  # 피격 시 약간 밀려남
+        self.player.is_invincible = True
+        self.player.invincibility_start_time = get_time()
 
     def exit(self, event):
         pass
@@ -212,6 +214,8 @@ class Death:
 
 
 class Player:
+    INVINCIBILITY_DURATION = 1.5  # 무적 시간 (초)
+
     def __init__(self, x = 50, y = 128):
         self.stat = Stat()
         self.hp = self.stat.max_hp
@@ -227,6 +231,8 @@ class Player:
         self.is_attacking = False
         self.y_velocity = 0
         self.on_tile = False
+        self.is_invincible = False
+        self.invincibility_start_time = 0
 
         self.image = {}
         self.image['Idle'] = load_image('./resources/player/Player_IDLE.png')
@@ -254,6 +260,9 @@ class Player:
         })
 
     def update(self):
+        if self.is_invincible and get_time() - self.invincibility_start_time > self.INVINCIBILITY_DURATION:
+            self.is_invincible = False
+
         self.on_tile = False
         self.state_machine.update()
 
@@ -275,7 +284,13 @@ class Player:
         self.state_machine.handle_state_event(('INPUT', event))
 
     def draw(self):
-        self.state_machine.draw()
+        # 무적 상태일 때 깜빡임 효과
+        if self.is_invincible:
+            if int(get_time() * 10) % 2 == 0:
+                self.state_machine.draw()
+        else:
+            self.state_machine.draw()
+
         draw_rectangle(*self.get_bb())
         hp_ratio = self.hp / self.stat.max_hp
         hp_bar_width = max(0, 500 * hp_ratio)
@@ -300,9 +315,7 @@ class Player:
                     self.y_velocity = 0
                     if self.state_machine.cur_state == self.JUMP:
                         self.state_machine.handle_state_event(('JUMP_END', None))
-        elif group == 'player:enemy':
-            self.state_machine.handle_state_event(('HURT', None))
-        elif group == 'bossAttack:player':
+        elif (group == 'player:enemy' or group == 'bossAttack:player') and not self.is_invincible:
             self.state_machine.handle_state_event(('HURT', None))
 
 
