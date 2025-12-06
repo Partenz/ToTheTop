@@ -64,7 +64,7 @@ def init():
 
     common.trader_weapon = TraderWeapon()
     game_world.add_object(common.trader_weapon, 2)
-    game_world.add_collision_pair('traderDrink:player', common.trader_weapon, None)
+    game_world.add_collision_pair('traderWeapon:player', common.trader_weapon, None)
 
 
 
