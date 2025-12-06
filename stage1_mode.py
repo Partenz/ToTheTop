@@ -35,6 +35,8 @@ def init():
         game_world.add_collision_pair('player:enemy', common.player, None)
         game_world.add_collision_pair('player:boss', common.player, None)
         game_world.add_collision_pair('bossAttack:player', None, common.player)
+        game_world.add_collision_pair('traderDrink:player', None, common.player)
+        game_world.add_collision_pair('traderWeapon:player', None, common.player)
 
     # 스테이지 이동에 따른 플레이어 위치 조정
     if game_world.stage_from == 'stage2':
@@ -58,9 +60,11 @@ def init():
 
     trader_drink = TraderDrink()
     game_world.add_object(trader_drink, 2)
+    game_world.add_collision_pair('traderDrink:player', trader_drink, None)
 
     trader_weapon = TraderWeapon()
     game_world.add_object(trader_weapon, 2)
+    game_world.add_collision_pair('traderDrink:player', trader_weapon, None)
 
 
 

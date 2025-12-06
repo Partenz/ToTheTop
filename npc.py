@@ -38,6 +38,9 @@ class TraderDrink:
     def handle_event(self, event):
         pass
 
+    def handle_collision(self, group, other):
+        pass
+
 class TraderWeapon:
     def __init__(self):
         self.image = load_image('./resources/npc/Trader_weapon.png')
@@ -60,4 +63,7 @@ class TraderWeapon:
         return self.x - 65, self.y - 45, self.x + 45, self.y + 65
 
     def handle_event(self, event):
+        pass
+
+    def handle_collision(self, group, other):
         pass
