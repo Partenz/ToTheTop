@@ -1,4 +1,4 @@
-from pico2d import load_image, get_time, draw_rectangle
+from pico2d import load_image, get_time, draw_rectangle, load_font
 from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_SPACE, SDLK_a
 
 import game_framework
@@ -213,6 +213,7 @@ class Player:
     def __init__(self, x = 50, y = 128):
         self.stat = Stat()
         self.hp = self.stat.max_hp
+        self.coin = 0
 
         self.x , self.y =  x, y
         self.frame = 0
@@ -231,6 +232,7 @@ class Player:
         self.image['Hurt'] = load_image('./resources/player/Player_Hurt.png')
         self.image['Death'] = load_image('./resources/player/Player_Death.png')
         self.hp_image = load_image('./resources/gui/hp.png')
+        self.font = load_font('./resources/font/ENCR10B.TTF', 32)
 
         self.IDLE = Idle(self)
         self.RUN = Run(self)
@@ -262,6 +264,7 @@ class Player:
         hp_bar_width = max(0, 500 * hp_ratio)
         hp_bar_x = 50 + hp_bar_width / 2
         self.hp_image.draw(hp_bar_x, 700, hp_bar_width, 40)
+        self.font.draw(1500, 700, f'Coin : {self.coin}', (255, 255, 0))
 
     def get_bb(self):
         return self.x - 32, self.y - 50, self.x + 32, self.y + 64
