@@ -24,6 +24,8 @@ buy_buttons = {
     ]
 }
 
+BUY_SOUND = None
+
 def is_point_in_rect(x, y, rect):
     x1, y1, x2, y2 = rect
     return x1 <= x <= x2 and y1 <= y <= y2
@@ -58,6 +60,7 @@ def handle_events():
                                 common.player.stat.bonus_defense += 10
                             elif i == 3:
                                 common.player.stat.bonus_defense += 10
+                            BUY_SOUND.play(1)
                             print(f'무기/방어구 {i + 1} 구매 완료! 남은 코인: {common.player.coin}')
                             print(f'현재 공격력 : {common.player.stat.attack}, 현재 방어력: {common.player.stat.defense}')
                         break
@@ -67,10 +70,11 @@ def handle_events():
                         if common.player.coin >= drink_price:
                             common.player.coin -= drink_price
                             common.player.health_potion += 1
+                            BUY_SOUND.play(1)
                             print(f'체력 물약 구매 완료! 남은 코인: {common.player.coin}, 현재 체력 물약 개수: {common.player.health_potion}')
 
 def init():
-    global shop_image, font, shop_category, weapon_image, drink_image
+    global shop_image, font, shop_category, weapon_image, drink_image, BUY_SOUND
     if shop_image is None:
         shop_image = {}
         shop_image['drink'] = load_image('./resources/gui/shop_drink.png')
@@ -84,6 +88,10 @@ def init():
         weapon_image.append(load_image('./resources/gui/armor.png'))
     if drink_image is None:
         drink_image = load_image('./resources/gui/healthPotion.png')
+
+    if BUY_SOUND is None:
+        BUY_SOUND = load_wav('./resources/sound/Buy.mp3')
+        BUY_SOUND.set_volume(30)
 
     # 어떤 상점과 상호작용했는지 확인
     if game_world.collide(common.player, common.trader_drink):
