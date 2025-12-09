@@ -51,6 +51,8 @@ def init():
 
     background = Background()
     game_world.add_object(background, 0)
+    background.bgm[game_world.stage].set_volume(30)
+    background.bgm[game_world.stage].repeat_play()
 
     tiles = [Tile(x * 64) for x in range(0, 30 + 1)]
     game_world.add_objects(tiles, 1)
