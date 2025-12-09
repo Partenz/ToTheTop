@@ -1,4 +1,4 @@
-from pico2d import load_image, get_time, draw_rectangle
+from pico2d import load_image, get_time, draw_rectangle, load_wav
 
 import random
 
@@ -37,11 +37,19 @@ class BossAttack:
         self.frame = 0
         self.x = Attack[which_hand][which_attack][0][0]
         self.y = Attack[which_hand][which_attack][0][1]
+        if which_attack == 'smash':
+            self.sound = load_wav('./resources/sound/BossSmash.mp3')
+        elif which_attack == 'sweep':
+            self.sound = load_wav('./resources/sound/BossSweep.mp3')
+        self.sound.set_volume(30)
 
     def update(self):
         if self.frame >= 5:
             game_world.remove_object(self)
             return
+
+        if int(self.frame) == 4:
+            self.sound.play()
 
         self.frame = self.frame + 6 * ACTION_PER_TIME * game_framework.frame_time
         self.x = Attack[self.which_hand][self.which_attack][int(self.frame)][0]
@@ -86,6 +94,9 @@ class Boss:
             Boss.image['Attack6'] = load_image('./resources/boss/Attack6.png')
             Boss.image['Hurt'] = load_image('./resources/boss/Hurt.png')
             Boss.image['Death'] = load_image('./resources/boss/Death.png')
+
+        self.hurt_sound = load_wav('./resources/sound/BossHurt.mp3')
+        self.hurt_sound.set_volume(30)
 
         self.hp = hp
         self.if_hurt = False
@@ -165,6 +176,8 @@ class Boss:
                     self.state = 'Death'
                     self.if_hurt = False
                     common.player.coin += 100
+                else:
+                    self.hurt_sound.play()
         elif group == 'boss:tile':
             left_boss, bottom_boss, right_boss, top_boss = self.get_bb()
             left_tile, bottom_tile, right_tile, top_tile = other.get_bb()
