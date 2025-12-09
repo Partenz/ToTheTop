@@ -134,6 +134,7 @@ class Jump:
     def enter(self, event):
         self.jump_start_time = get_time()
         self.player.y_velocity = JUMP_SPEED_PPS
+        self.player.jump_sound.play(1)
 
     def exit(self, event):
         pass
@@ -250,6 +251,8 @@ class Player:
         self.attack_sound.set_volume(30)
         self.potion_sound = load_wav('./resources/sound/Potion.mp3')
         self.potion_sound.set_volume(30)
+        self.jump_sound = load_wav('./resources/sound/Jump.mp3')
+        self.jump_sound.set_volume(30)
 
         self.IDLE = Idle(self)
         self.RUN = Run(self)
