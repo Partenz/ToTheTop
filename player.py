@@ -286,8 +286,9 @@ class Player:
                 game_framework.push_mode(shop_mode)
         elif event.type == SDL_KEYDOWN and event.key == SDLK_p:
             self.coin += 50
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_h:
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_h and self.health_potion > 0:
             self.hp = self.stat.max_hp
+            self.health_potion -= 1
             self.potion_sound.play(1)
 
         self.state_machine.handle_state_event(('INPUT', event))
