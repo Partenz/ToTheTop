@@ -119,7 +119,7 @@ class Portal:
         pass
 
     def draw(self):
-        draw_rectangle(*self.get_bb())
-
+       # draw_rectangle(*self.get_bb())
+        pass
     def get_bb(self):
         return self.x - self.width // 2, self.y - self.height // 2, self.x + self.width // 2, self.y + self.height // 2

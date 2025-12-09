@@ -85,7 +85,7 @@ class Mushroom:
         elif self.face_dir == -1:
             self.image[self.state].clip_draw(int(self.frame) * 64, 64, 64, 64, self.x, self.y, self.size, self.size)
 
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         if self.state == 'Attack':

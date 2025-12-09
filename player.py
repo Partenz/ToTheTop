@@ -311,7 +311,7 @@ class Player:
         else:
             self.state_machine.draw()
 
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
         hp_ratio = self.hp / self.stat.max_hp
         hp_bar_width = max(0, 500 * hp_ratio)
         hp_bar_x = 50 + hp_bar_width / 2

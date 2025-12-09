@@ -30,7 +30,7 @@ class TraderDrink:
     def draw(self):
         self.image.clip_draw(int(self.frame) * 32, 0, 32, 32, self.x, self.y, self.size, self.size)
 
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return self.x - 45, self.y - 55, self.x + 45, self.y + 65
@@ -57,7 +57,7 @@ class TraderWeapon:
     def draw(self):
         self.image.clip_draw(int(self.frame) * 32, 0, 32, 32, self.x, self.y, self.size, self.size)
 
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return self.x - 65, self.y - 45, self.x + 45, self.y + 65

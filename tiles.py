@@ -19,7 +19,7 @@ class Tile:
 
     def draw(self):
         self.image[game_world.stage].draw(self.x, self.y)
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return self.x - 32, self.y - 32, self.x + 32, self.y + 20

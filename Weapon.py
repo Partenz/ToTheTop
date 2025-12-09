@@ -28,7 +28,8 @@ class Weapon:
 
     def draw(self):
         # 디버깅용으로 바운딩 박스 그리기
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
+        pass
 
     def handle_collision(self, group, other):
         if group == 'enemy:weapon':

@@ -61,7 +61,8 @@ class BossAttack:
 
     def draw(self):
         # 디버깅용으로 바운딩 박스 그리기
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
+        pass
 
     def handle_collision(self, group, other):
         if group == 'bossAttack:player':
@@ -141,7 +142,7 @@ class Boss:
     def draw(self):
         self.image[self.state].clip_draw(int(self.frame) * 256, 0, 256, 256, self.x, self.y, self.size, self.size)
 
-        draw_rectangle(*self.get_bb())
+        #draw_rectangle(*self.get_bb())
 
     def get_bb(self):
         return self.x - 270, self.y - 512, self.x + 270, self.y
