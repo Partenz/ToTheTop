@@ -1,4 +1,4 @@
-from pico2d import load_image, get_time, draw_rectangle, load_font
+from pico2d import load_image, get_time, draw_rectangle, load_font, load_music
 from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_SPACE, SDLK_a, SDLK_e, SDLK_p, SDLK_h
 
 import common
@@ -100,6 +100,9 @@ class Attack:
         self.attack_start_time = get_time()
         self.player.is_attacking = True
         self.player.frame = 0
+
+        # 공격 사운드
+        self.player.attack_sound.play(1)
 
         # 무기 객체 생성 및 게임 월드에 추가
         weapon = Weapon(self.player)
@@ -243,6 +246,11 @@ class Player:
         self.hp_image = load_image('./resources/gui/hp.png')
         self.font = load_font('./resources/font/ENCR10B.TTF', 32)
 
+        self.attack_sound = load_music('./resources/sound/Attack.mp3')
+        self.attack_sound.set_volume(30)
+        self.potion_sound = load_music('./resources/sound/Potion.mp3')
+        self.potion_sound.set_volume(30)
+
         self.IDLE = Idle(self)
         self.RUN = Run(self)
         self.ATTACK = Attack(self)
@@ -280,6 +288,7 @@ class Player:
             self.coin += 50
         elif event.type == SDL_KEYDOWN and event.key == SDLK_h:
             self.hp = self.stat.max_hp
+            self.potion_sound.play(1)
 
         self.state_machine.handle_state_event(('INPUT', event))
 
