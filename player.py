@@ -167,6 +167,8 @@ class Hurt:
         self.player.is_invincible = True
         self.player.invincibility_start_time = get_time()
 
+        self.player.hurt_sound.play(1)
+
     def exit(self, event):
         pass
 
@@ -195,6 +197,7 @@ class Death:
     def enter(self, event):
         self.player.frame = 0
         self.animation_start_time = get_time()
+        self.player.death_sound.play(1)
 
     def exit(self, event):
         pass
@@ -253,6 +256,10 @@ class Player:
         self.potion_sound.set_volume(30)
         self.jump_sound = load_wav('./resources/sound/Jump.mp3')
         self.jump_sound.set_volume(30)
+        self.hurt_sound = load_wav('./resources/sound/Hurt.mp3')
+        self.hurt_sound.set_volume(30)
+        self.death_sound = load_wav('./resources/sound/Death.mp3')
+        self.death_sound.set_volume(30)
 
         self.IDLE = Idle(self)
         self.RUN = Run(self)
