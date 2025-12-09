@@ -1,4 +1,4 @@
-from pico2d import load_image, get_time, draw_rectangle, load_font, load_music
+from pico2d import load_image, get_time, draw_rectangle, load_font, load_music, load_wav
 from sdl2 import SDL_KEYDOWN, SDLK_LEFT, SDL_KEYUP, SDLK_RIGHT, SDLK_SPACE, SDLK_a, SDLK_e, SDLK_p, SDLK_h
 
 import common
@@ -246,9 +246,9 @@ class Player:
         self.hp_image = load_image('./resources/gui/hp.png')
         self.font = load_font('./resources/font/ENCR10B.TTF', 32)
 
-        self.attack_sound = load_music('./resources/sound/Attack.mp3')
+        self.attack_sound = load_wav('./resources/sound/Attack.mp3')
         self.attack_sound.set_volume(30)
-        self.potion_sound = load_music('./resources/sound/Potion.mp3')
+        self.potion_sound = load_wav('./resources/sound/Potion.mp3')
         self.potion_sound.set_volume(30)
 
         self.IDLE = Idle(self)
