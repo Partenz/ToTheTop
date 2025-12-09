@@ -199,12 +199,12 @@ class Death:
         self.player.frame = (self.player.frame + FRAMES_PER_ACTION['Death'] * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION['Death']
 
         if get_time() - self.animation_start_time >= TIME_PER_ACTION:
-            game_framework.change_mode(stage1_mode)
             game_world.stage = 'stage1'
             game_world.stage_from = None
             self.player.hp = 100
             self.player.frame = 0
             self.player.state_machine.handle_state_event(('TIME_OUT', None))
+            game_framework.change_mode(stage1_mode)
 
     def draw(self):
         if self.player.face_dir == 1:  # 오른쪽
